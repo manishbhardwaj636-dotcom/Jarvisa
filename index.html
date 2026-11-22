@@ -3,238 +3,283 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>J.A.R.V.I.S. — Voice Assistant</title>
+<title>J.A.R.V.I.S. — Holographic AI Assistant</title>
 <style>
   :root {
-    --primary: #2de2ff;
-    --glow: rgba(45, 226, 255, 0.45);
-    --bg: #040812;
-    --panel: rgba(10, 20, 40, 0.78);
-    --border: rgba(45, 226, 255, 0.25);
-    --text: #e6f7ff;
+    --primary: #00f0ff;
+    --secondary: #7000ff;
+    --glow: rgba(0, 240, 255, 0.5);
+    --bg: #030712;
+    --panel: rgba(11, 22, 44, 0.82);
+    --border: rgba(0, 240, 255, 0.28);
+    --text: #eaf8ff;
   }
 
-  body.state-standby { --primary: #2de2ff; --glow: rgba(45, 226, 255, 0.38); }
-  body.state-listening { --primary: #00ffaa; --glow: rgba(0, 255, 170, 0.55); }
-  body.state-thinking { --primary: #ffcc4d; --glow: rgba(255, 204, 77, 0.55); }
-  body.state-speaking { --primary: #9d7bff; --glow: rgba(157, 123, 255, 0.55); }
+  body.state-standby { --primary: #00f0ff; --glow: rgba(0, 240, 255, 0.42); }
+  body.state-listening { --primary: #00ff9d; --glow: rgba(0, 255, 157, 0.6); }
+  body.state-thinking { --primary: #ffbe3b; --glow: rgba(255, 190, 59, 0.6); }
+  body.state-speaking { --primary: #b17aff; --glow: rgba(177, 122, 255, 0.65); }
 
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
 
   body {
-    background: radial-gradient(circle at 50% 42%, #0a1730 0%, var(--bg) 72%);
+    background: radial-gradient(circle at 50% 32%, #0d1f42 0%, var(--bg) 75%);
     color: var(--text);
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    padding: 14px;
     overflow-x: hidden;
-    padding: 16px;
-    transition: --primary 0.4s ease;
   }
 
-  /* Subtle cyber grid background */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(45, 226, 255, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(45, 226, 255, 0.04) 1px, transparent 1px);
-    background-size: 36px 36px;
+      linear-gradient(rgba(0, 240, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 240, 255, 0.045) 1px, transparent 1px);
+    background-size: 32px 32px;
     pointer-events: none;
     z-index: 0;
   }
 
-  /* Top HUD Bar */
+  /* Top Bar */
   .top-bar {
     width: 100%;
-    max-width: 680px;
+    max-width: 720px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 2;
-    padding: 8px 14px;
+    z-index: 3;
+    padding: 10px 16px;
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.45);
   }
 
-  .hud-clock { font-size: 1.05rem; font-weight: 600; letter-spacing: 1px; color: var(--primary); }
-  .hud-date { font-size: 0.78rem; opacity: 0.75; }
+  .hud-clock { font-size: 1.15rem; font-weight: 700; letter-spacing: 1px; color: var(--primary); }
+  .hud-date { font-size: 0.78rem; opacity: 0.8; }
+
+  .top-actions { display: flex; gap: 8px; align-items: center; }
 
   .icon-btn {
-    background: rgba(45, 226, 255, 0.1);
+    background: rgba(0, 240, 255, 0.1);
     border: 1px solid var(--border);
     color: var(--text);
-    width: 38px;
     height: 38px;
+    padding: 0 12px;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 1.15rem;
-    display: grid;
-    place-items: center;
-    transition: 0.25s;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: 0.2s;
   }
-  .icon-btn:hover { background: rgba(45, 226, 255, 0.22); transform: scale(1.05); }
+  .icon-btn:hover { background: rgba(0, 240, 255, 0.24); transform: translateY(-1px); }
 
-  /* Center Arc Reactor HUD */
-  .reactor-stage {
+  /* Holographic AI Avatar Stage */
+  .avatar-stage {
     position: relative;
-    width: 260px;
-    height: 260px;
+    width: 270px;
+    height: 270px;
     display: grid;
     place-items: center;
-    margin: 14px 0;
+    margin: 8px 0;
     z-index: 2;
     cursor: pointer;
     user-select: none;
   }
 
-  .ring {
+  .halo-outer {
     position: absolute;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    border: 2px dashed var(--primary);
+    opacity: 0.55;
+    animation: spinCW 18s linear infinite;
+  }
+
+  .halo-inner {
+    position: absolute;
+    width: 224px; height: 224px;
     border-radius: 50%;
     border: 2px solid transparent;
-    transition: border-color 0.4s, box-shadow 0.4s;
-  }
-
-  .ring-1 {
-    width: 250px; height: 250px;
     border-top-color: var(--primary);
     border-bottom-color: var(--primary);
-    opacity: 0.55;
-    animation: spinCW 14s linear infinite;
-  }
-
-  .ring-2 {
-    width: 212px; height: 212px;
-    border-left: 3px dashed var(--primary);
-    border-right: 3px dashed var(--primary);
-    opacity: 0.7;
+    box-shadow: 0 0 25px var(--glow);
     animation: spinCCW 9s linear infinite;
   }
 
-  .ring-3 {
-    width: 174px; height: 174px;
-    border: 1.5px solid var(--primary);
-    box-shadow: inset 0 0 18px var(--glow), 0 0 18px var(--glow);
-    animation: pulseRing 2.6s ease-in-out infinite;
-  }
+  body.state-listening .halo-inner { animation-duration: 3s; }
+  body.state-speaking .halo-inner { animation-duration: 2s; }
 
-  body.state-listening .ring-1 { animation-duration: 4s; }
-  body.state-listening .ring-2 { animation-duration: 3s; }
-  body.state-thinking .ring-1 { animation-duration: 2s; }
-  body.state-speaking .ring-3 { animation-duration: 0.9s; }
-
-  .core {
-    width: 124px;
-    height: 124px;
+  .avatar-holo {
+    position: relative;
+    width: 184px;
+    height: 184px;
     border-radius: 50%;
-    background: radial-gradient(circle, var(--primary) 0%, rgba(10, 25, 48, 0.92) 72%);
-    box-shadow: 0 0 32px var(--glow), inset 0 0 20px rgba(255,255,255,0.25);
+    background: radial-gradient(circle at 50% 35%, rgba(0, 240, 255, 0.22), rgba(6, 14, 32, 0.95) 75%);
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 36px var(--glow), inset 0 0 24px var(--glow);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    transition: 0.35s ease;
-    border: 2px solid var(--primary);
+    overflow: hidden;
+    animation: floatAvatar 3.6s ease-in-out infinite;
   }
-  .reactor-stage:active .core { transform: scale(0.94); }
 
-  .core-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 2px;
+  /* Scanline effect inside avatar */
+  .avatar-holo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0, 240, 255, 0.06) 4px
+    );
+    pointer-events: none;
+  }
+
+  /* AI Face SVG */
+  .ai-face { width: 120px; height: 120px; z-index: 2; }
+  .ai-eye {
+    fill: var(--primary);
+    filter: drop-shadow(0 0 6px var(--primary));
+    transform-origin: center;
+    animation: blinkEye 4.5s infinite;
+  }
+  .ai-mouth {
+    stroke: var(--primary);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    fill: none;
+    filter: drop-shadow(0 0 6px var(--primary));
+    transition: d 0.15s ease;
+  }
+  body.state-speaking .ai-mouth {
+    animation: talkMouth 0.28s ease-in-out infinite alternate;
+  }
+
+  /* Namaste Hands Badge */
+  .namaste-badge {
+    position: absolute;
+    bottom: 10px;
+    background: rgba(0, 240, 255, 0.16);
+    border: 1px solid var(--primary);
     color: #fff;
-    text-shadow: 0 0 10px var(--primary);
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    z-index: 3;
+    box-shadow: 0 0 12px var(--glow);
+    animation: namastePulse 2.4s ease-in-out infinite;
   }
-
-  /* Equalizer Wave Bars */
-  .visualizer {
-    display: flex;
-    gap: 4px;
-    height: 22px;
-    align-items: center;
-    margin-top: 6px;
-  }
-  .bar {
-    width: 3px;
-    height: 5px;
-    background: #fff;
-    border-radius: 3px;
-    transition: height 0.15s;
-  }
-  body.state-listening .bar,
-  body.state-speaking .bar {
-    animation: eqWave 0.65s ease-in-out infinite alternate;
-  }
-  .bar:nth-child(2) { animation-delay: 0.12s; }
-  .bar:nth-child(3) { animation-delay: 0.24s; }
-  .bar:nth-child(4) { animation-delay: 0.36s; }
-  .bar:nth-child(5) { animation-delay: 0.18s; }
 
   @keyframes spinCW { to { transform: rotate(360deg); } }
   @keyframes spinCCW { to { transform: rotate(-360deg); } }
-  @keyframes pulseRing {
-    0%, 100% { transform: scale(0.98); opacity: 0.75; }
-    50% { transform: scale(1.03); opacity: 1; }
+  @keyframes floatAvatar {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
   }
-  @keyframes eqWave {
-    0% { height: 4px; }
-    100% { height: 20px; }
+  @keyframes blinkEye {
+    0%, 94%, 100% { transform: scaleY(1); }
+    97% { transform: scaleY(0.1); }
+  }
+  @keyframes talkMouth {
+    0% { transform: scaleY(0.6); }
+    100% { transform: scaleY(1.45); }
+  }
+  @keyframes namastePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
   }
 
-  /* Status & Transcript Area */
+  /* Status Pill */
   .status-pill {
     z-index: 2;
-    padding: 6px 16px;
+    padding: 7px 18px;
     border-radius: 999px;
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     font-weight: 600;
-    letter-spacing: 0.6px;
     background: var(--panel);
     border: 1px solid var(--primary);
     color: var(--primary);
-    box-shadow: 0 0 14px var(--glow);
-    margin-bottom: 10px;
+    box-shadow: 0 0 16px var(--glow);
+    margin-bottom: 8px;
+    text-align: center;
   }
 
+  /* Quick Action Chips */
+  .quick-chips {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 2px 8px;
+    z-index: 2;
+    scrollbar-width: none;
+  }
+  .quick-chips::-webkit-scrollbar { display: none; }
+  .chip {
+    white-space: nowrap;
+    background: rgba(0, 240, 255, 0.09);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .chip:hover { background: rgba(0, 240, 255, 0.24); border-color: var(--primary); }
+
+  /* Chat Box */
   .chat-box {
     width: 100%;
-    max-width: 680px;
+    max-width: 720px;
     z-index: 2;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 14px 16px;
+    padding: 12px 14px;
     backdrop-filter: blur(12px);
-    min-height: 110px;
-    max-height: 220px;
+    min-height: 105px;
+    max-height: 195px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
 
-  .msg-user { align-self: flex-end; background: rgba(45, 226, 255, 0.14); padding: 7px 12px; border-radius: 12px 12px 2px 12px; font-size: 0.92rem; max-width: 85%; }
-  .msg-ai { align-self: flex-start; background: rgba(255, 255, 255, 0.06); border-left: 3px solid var(--primary); padding: 8px 12px; border-radius: 4px 12px 12px 12px; font-size: 0.95rem; line-height: 1.45; max-width: 92%; }
+  .msg-user { align-self: flex-end; background: rgba(0, 240, 255, 0.16); padding: 7px 12px; border-radius: 12px 12px 2px 12px; font-size: 0.9rem; max-width: 85%; }
+  .msg-ai { align-self: flex-start; background: rgba(255, 255, 255, 0.06); border-left: 3px solid var(--primary); padding: 8px 12px; border-radius: 4px 12px 12px 12px; font-size: 0.94rem; line-height: 1.45; max-width: 92%; }
 
-  /* Active Reminders & Timers */
+  /* Active Timers */
   .badges-wrap {
     width: 100%;
-    max-width: 680px;
+    max-width: 720px;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     z-index: 2;
-    margin-top: 8px;
+    margin-top: 6px;
   }
   .timer-badge {
-    background: rgba(255, 204, 77, 0.14);
-    border: 1px solid rgba(255, 204, 77, 0.45);
+    background: rgba(255, 190, 59, 0.16);
+    border: 1px solid rgba(255, 190, 59, 0.5);
     color: #ffe299;
     padding: 5px 10px;
     border-radius: 999px;
@@ -243,59 +288,59 @@
     align-items: center;
     gap: 6px;
   }
-  .timer-badge button {
-    background: none; border: none; color: #ff7b7b; cursor: pointer; font-weight: bold;
-  }
+  .timer-badge button { background: none; border: none; color: #ff7b7b; cursor: pointer; font-weight: bold; }
 
-  /* YouTube Mini Player */
+  /* YouTube Player with IFrame API */
   #yt-container {
     width: 100%;
-    max-width: 680px;
-    margin-top: 10px;
+    max-width: 720px;
+    margin-top: 8px;
     z-index: 2;
     display: none;
     background: var(--panel);
-    border: 1px solid var(--border);
+    border: 1px solid var(--primary);
     border-radius: 14px;
     overflow: hidden;
+    box-shadow: 0 0 24px rgba(0, 240, 255, 0.2);
   }
   .yt-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 12px;
-    font-size: 0.82rem;
-    background: rgba(0,0,0,0.4);
+    padding: 7px 12px;
+    font-size: 0.84rem;
+    background: rgba(0, 0, 0, 0.55);
   }
-  #yt-frame { width: 100%; height: 210px; border: none; }
+  .yt-controls { display: flex; gap: 6px; align-items: center; }
+  #yt-player-wrap { width: 100%; height: 215px; background: #000; }
 
   /* Settings Modal */
   .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(2, 6, 16, 0.85);
+    background: rgba(2, 6, 16, 0.88);
     backdrop-filter: blur(8px);
     display: none;
     place-items: center;
-    z-index: 20;
-    padding: 16px;
+    z-index: 30;
+    padding: 14px;
   }
   .modal-backdrop.open { display: grid; }
   .modal {
     width: 100%;
-    max-width: 500px;
+    max-width: 520px;
     max-height: 90dvh;
     overflow-y: auto;
-    background: #0b1528;
+    background: #0a1428;
     border: 1px solid var(--primary);
     border-radius: 18px;
     padding: 20px;
-    box-shadow: 0 0 35px rgba(45, 226, 255, 0.25);
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.28);
   }
-  .modal h2 { font-size: 1.15rem; color: var(--primary); margin-bottom: 14px; }
-  .field { margin-bottom: 12px; }
+  .modal h2 { font-size: 1.15rem; color: var(--primary); margin-bottom: 12px; }
+  .field { margin-bottom: 11px; }
   .field label { display: block; font-size: 0.82rem; margin-bottom: 4px; color: #b8dcff; }
-  .field input, .field textarea, .field select {
+  .field input, .field textarea {
     width: 100%;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid var(--border);
@@ -304,17 +349,11 @@
     color: #fff;
     font-size: 0.9rem;
   }
-  .field textarea { min-height: 76px; resize: vertical; }
-  .check-row { display: flex; align-items: center; gap: 10px; margin: 12px 0; font-size: 0.88rem; }
+  .field textarea { min-height: 84px; resize: vertical; }
+  .check-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; font-size: 0.88rem; }
   .check-row input { width: 18px; height: 18px; accent-color: var(--primary); }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
-  .btn {
-    padding: 9px 16px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    font-weight: 600;
-  }
+  .modal-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+  .btn { padding: 9px 15px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; font-weight: 600; font-size: 0.88rem; }
   .btn-primary { background: var(--primary); color: #03101f; border: none; }
   .btn-ghost { background: transparent; color: var(--text); }
 </style>
@@ -326,38 +365,65 @@
       <div class="hud-clock" id="clock">00:00:00</div>
       <div class="hud-date" id="dateStr">Loading...</div>
     </div>
-    <div style="display:flex; gap:8px;">
+    <div class="top-actions">
+      <button class="icon-btn" id="btnNamaste" title="Namaste & Start">🙏 नमस्ते</button>
       <button class="icon-btn" id="btnStopAll" title="चुप कराएं / Stop">⏹</button>
       <button class="icon-btn" id="btnSettings" title="Settings">⚙</button>
     </div>
   </div>
 
-  <div class="reactor-stage" id="reactorBtn" title="Tap karke seedha bolein">
-    <div class="ring ring-1"></div>
-    <div class="ring ring-2"></div>
-    <div class="ring ring-3"></div>
-    <div class="core">
-      <div class="core-title">JARVIS</div>
-      <div class="visualizer">
-        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      </div>
+  <!-- Holographic AI Avatar -->
+  <div class="avatar-stage" id="reactorBtn" title="टैप करके सीधे बोलें">
+    <div class="halo-outer"></div>
+    <div class="halo-inner"></div>
+    <div class="avatar-holo">
+      <svg class="ai-face" viewBox="0 0 120 120">
+        <!-- Head outline -->
+        <path d="M30 48 C30 22, 90 22, 90 48 L86 82 C86 98, 68 106, 60 106 C52 106, 34 98, 34 82 Z"
+              fill="rgba(0,240,255,0.08)" stroke="var(--primary)" stroke-width="2" />
+        <!-- Forehead neural lines -->
+        <path d="M46 28 L60 35 L74 28" stroke="var(--primary)" stroke-width="1.5" fill="none" opacity="0.7" />
+        <!-- Eyes -->
+        <ellipse class="ai-eye" cx="46" cy="54" rx="7" ry="4.5" />
+        <ellipse class="ai-eye" cx="74" cy="54" rx="7" ry="4.5" />
+        <!-- Nose bridge -->
+        <path d="M60 56 L58 70 L62 70" stroke="var(--primary)" stroke-width="1.5" fill="none" opacity="0.65" />
+        <!-- Animated Speaking Mouth -->
+        <path class="ai-mouth" id="aiMouth" d="M47 83 Q60 91 73 83" />
+      </svg>
+      <div class="namaste-badge" id="namasteBadge">🙏 नमस्ते</div>
     </div>
   </div>
 
-  <div class="status-pill" id="statusPill">STANDBY • "JARVIS" बोलें या टैप करें</div>
+  <div class="status-pill" id="statusPill">🙏 "JARVIS" बोलें या Avatar पर टैप करें</div>
+
+  <!-- Quick 1-Tap Voice Simulation Chips -->
+  <div class="quick-chips">
+    <button class="chip" onclick="handleUserCommand('खाटू श्याम जी मंगला आरती लगाओ')">🪔 खाटू श्याम मंगला आरती</button>
+    <button class="chip" onclick="handleUserCommand('हनुमान चालीसा लगाओ')">🚩 हनुमान चालीसा</button>
+    <button class="chip" onclick="handleUserCommand('कोई दूसरी आरती बजाओ')">🎵 दूसरी आरती बजाओ</button>
+    <button class="chip" onclick="handleUserCommand('आवाज़ तेज़ करो')">🔊 आवाज़ तेज़</button>
+    <button class="chip" onclick="handleUserCommand('आवाज़ कम करो')">🔉 आवाज़ कम</button>
+    <button class="chip" onclick="handleUserCommand('टाइम बताओ')">🕒 टाइम</button>
+  </div>
 
   <div class="chat-box" id="chatBox">
-    <div class="msg-ai">नमस्ते! मैं तैयार हूँ। बस <b>"Jarvis"</b> बोलकर अपना आदेश दें या बीच के गोले पर टैप करें।</div>
+    <div class="msg-ai">🙏 नमस्ते! मैं J.A.R.V.I.S. हूँ। बस <b>"Jarvis"</b> बोलें या Avatar पर टैप करके आदेश दें।</div>
   </div>
 
   <div class="badges-wrap" id="badgesWrap"></div>
 
+  <!-- YouTube Player -->
   <div id="yt-container">
     <div class="yt-header">
-      <span id="yt-title">चल रहा है...</span>
-      <button class="icon-btn" style="width:28px;height:28px;font-size:0.85rem;" onclick="closePlayer()">✕</button>
+      <span id="yt-title">▶ आरती चल रही है...</span>
+      <div class="yt-controls">
+        <button class="icon-btn" style="height:28px;padding:0 8px;font-size:0.8rem;" onclick="changeVolume(-20)">🔉 -</button>
+        <button class="icon-btn" style="height:28px;padding:0 8px;font-size:0.8rem;" onclick="changeVolume(20)">🔊 +</button>
+        <button class="icon-btn" style="height:28px;padding:0 8px;font-size:0.8rem;" onclick="closePlayer()">✕</button>
+      </div>
     </div>
-    <iframe id="yt-frame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div id="yt-player-wrap"><div id="yt-player"></div></div>
   </div>
 
   <!-- Settings Modal -->
@@ -367,22 +433,22 @@
 
       <div class="check-row">
         <input type="checkbox" id="s_handsfree" checked />
-        <label for="s_handsfree">Hands-Free Mode ("Jarvis" wake-word के साथ लगातार सुनना)</label>
+        <label for="s_handsfree">Hands-Free Mode ("Jarvis" बोलने पर लगातार सुनना)</label>
       </div>
 
       <div class="field">
-        <label>Gemini API Key (ज़रूरी)</label>
+        <label>Gemini API Key (AI जवाबों के लिए)</label>
         <input type="password" id="s_key" placeholder="AIzaSy..." />
       </div>
 
       <div class="field">
-        <label>YouTube Data API v3 Key (किसी भी आरती को सीधे चलाने के लिए)</label>
-        <input type="password" id="s_ytkey" placeholder="AIzaSy... (YouTube Data API v3)" />
+        <label>YouTube Data API v3 Key (किसी भी नई आरती को सीधे चलाने के लिए)</label>
+        <input type="password" id="s_ytkey" placeholder="AIzaSy..." />
       </div>
 
       <div class="field">
         <label>Gemini Model</label>
-        <input type="text" id="s_model" value="gemini-2.5-flash" />
+        <input type="text" id="s_model" value="gemini-2.0-flash" />
       </div>
 
       <div class="field">
@@ -392,60 +458,103 @@
 
       <div class="field">
         <label>WhatsApp Contacts (हर लाइन में: नाम | 91XXXXXXXXXX)</label>
-        <textarea id="s_contacts" placeholder="Manish | 9198XXXXXXXX&#10;Didi | 9197XXXXXXXX"></textarea>
+        <textarea id="s_contacts" placeholder="Manish | 9198XXXXXXXX"></textarea>
       </div>
 
       <div class="field">
-        <label>Saved Aarti / Bhajan List (हर लाइन में: नाम | YouTube Video ID या URL)</label>
-        <textarea id="s_favs" placeholder="हनुमान चालीसा | AETFvQonfV8&#10;गायत्री मंत्र | Sarl_5g5xP8"></textarea>
+        <label>Saved Aarti / Bhajan List (हर लाइन में: नाम | YouTube Link या Video ID)</label>
+        <textarea id="s_favs">खाटू श्याम जी मंगला आरती | https://www.youtube.com/watch?v=GlyOxMcwt_o
+हनुमान चालीसा | https://www.youtube.com/watch?v=AETFvQonfV8
+गायत्री मंत्र | https://www.youtube.com/watch?v=Sarl_5g5xP8
+श्याम बाबा की आरती | https://www.youtube.com/watch?v=9bZkp7q19f0</textarea>
       </div>
 
       <div class="field">
-        <label>Auto-Start Aarti (पेज खुलते ही चलाने के लिए नाम लिखें, वरना खाली छोड़ें)</label>
-        <input type="text" id="s_start" placeholder="उदाहरण: हनुमान चालीसा" />
+        <label>Auto-Start Aarti (पेज खुलते ही चलाने के लिए नाम लिखें)</label>
+        <input type="text" id="s_start" placeholder="उदाहरण: खाटू श्याम जी मंगला आरती" />
       </div>
 
       <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="downloadShutdownHelper()" title="Windows PC Shutdown Helper">💻 PC Shutdown Helper</button>
         <button class="btn btn-ghost" id="btnCloseSettings">बंद करें</button>
         <button class="btn btn-primary" id="btnSaveSettings">सेव करें</button>
       </div>
     </div>
   </div>
 
+<!-- Load YouTube IFrame Player API for real volume & playback control -->
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-const STORAGE_KEY = 'jarvis_config_v3';
+const STORAGE_KEY = 'jarvis_config_v4';
+const DEFAULT_FAVS = [
+  'खाटू श्याम जी मंगला आरती | https://www.youtube.com/watch?v=GlyOxMcwt_o',
+  'हनुमान चालीसा | https://www.youtube.com/watch?v=AETFvQonfV8',
+  'गायत्री मंत्र | https://www.youtube.com/watch?v=Sarl_5g5xP8',
+  'ओम जय जगदीश हरे आरती | https://www.youtube.com/watch?v=3ucCEjXS9n8'
+].join('\n');
+
 let cfg = {
   handsfree: true,
   key: '',
   ytKey: '',
-  model: 'gemini-2.5-flash',
+  model: 'gemini-2.0-flash',
   userName: 'मम्मी जी',
   contacts: '',
-  favs: 'हनुमान चालीसा | AETFvQonfV8\nगायत्री मंत्र | Sarl_5g5xP8',
+  favs: DEFAULT_FAVS,
   autoStart: ''
 };
 
-let isAwake = false;        // True for 12s after saying "Jarvis" or tapping reactor
+let isAwake = false;
 let awakeTimer = null;
 let isSpeaking = false;
 let isProcessing = false;
 let recognition = null;
 let restartTimeout = null;
 let activeTimers = [];
+let openedTabs = [];
+let ytPlayer = null;
+let ytReady = false;
+let pendingVideo = null;
+let currentFavIndex = 0;
+let speechVol = 1.0;
 
-// Load & Save Config
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '215',
+    width: '100%',
+    videoId: 'GlyOxMcwt_o',
+    playerVars: { autoplay: 0, rel: 0, modestbranding: 1 },
+    events: {
+      onReady: () => {
+        ytReady = true;
+        if (pendingVideo) {
+          ytPlayer.loadVideoById(pendingVideo);
+          pendingVideo = null;
+        }
+      }
+    }
+  });
+}
+
 function loadCfg() {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    // Migrate old v3 keys if v4 not found
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || JSON.parse(localStorage.getItem('jarvis_config_v3'));
     if (saved) cfg = { ...cfg, ...saved };
   } catch (e) {}
+
+  if (!cfg.model || cfg.model === 'gemini-2.5-flash') cfg.model = 'gemini-2.0-flash';
+  if (!cfg.favs || !cfg.favs.includes('GlyOxMcwt_o')) {
+    cfg.favs = DEFAULT_FAVS + (cfg.favs ? '\n' + cfg.favs : '');
+  }
+
   document.getElementById('s_handsfree').checked = cfg.handsfree !== false;
   document.getElementById('s_key').value = cfg.key || '';
   document.getElementById('s_ytkey').value = cfg.ytKey || '';
-  document.getElementById('s_model').value = cfg.model || 'gemini-2.5-flash';
+  document.getElementById('s_model').value = cfg.model;
   document.getElementById('s_name').value = cfg.userName || 'मम्मी जी';
   document.getElementById('s_contacts').value = cfg.contacts || '';
-  document.getElementById('s_favs').value = cfg.favs || '';
+  document.getElementById('s_favs').value = cfg.favs;
   document.getElementById('s_start').value = cfg.autoStart || '';
 }
 
@@ -453,18 +562,18 @@ function saveCfg() {
   cfg.handsfree = document.getElementById('s_handsfree').checked;
   cfg.key = document.getElementById('s_key').value.trim();
   cfg.ytKey = document.getElementById('s_ytkey').value.trim();
-  cfg.model = document.getElementById('s_model').value.trim() || 'gemini-2.5-flash';
+  cfg.model = document.getElementById('s_model').value.trim() || 'gemini-2.0-flash';
   cfg.userName = document.getElementById('s_name').value.trim() || 'मम्मी जी';
   cfg.contacts = document.getElementById('s_contacts').value.trim();
-  cfg.favs = document.getElementById('s_favs').value.trim();
+  cfg.favs = document.getElementById('s_favs').value.trim() || DEFAULT_FAVS;
   cfg.autoStart = document.getElementById('s_start').value.trim();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
   document.getElementById('settingsModal').classList.remove('open');
-  addMsg('ai', 'सेटिंग्स सेव हो गई हैं।');
-  if (cfg.handsfree) startListening(false);
+  const msg = `नमस्ते ${cfg.userName}, आपकी सारी सेटिंग्स सेव हो गई हैं।`;
+  addMsg('ai', msg);
+  speak(msg);
 }
 
-// Clock
 function updateClock() {
   const now = new Date();
   document.getElementById('clock').textContent = now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -473,7 +582,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// UI State & Chat Helpers
 function setState(state, customText) {
   document.body.className = `state-${state}`;
   const pill = document.getElementById('statusPill');
@@ -482,13 +590,13 @@ function setState(state, customText) {
     return;
   }
   if (state === 'listening') {
-    pill.textContent = isAwake ? 'सुन रहा हूँ... बोलिए' : 'STANDBY • "JARVIS" बोलें';
+    pill.textContent = isAwake ? '🟢 सुन रहा हूँ... बोलिए' : '🙏 STANDBY • "JARVIS" बोलें';
   } else if (state === 'thinking') {
-    pill.textContent = 'सोच रहा हूँ...';
+    pill.textContent = '🟡 समझ रहा हूँ...';
   } else if (state === 'speaking') {
-    pill.textContent = 'बोल रहा हूँ...';
+    pill.textContent = '🟣 बोल रहा हूँ...';
   } else {
-    pill.textContent = cfg.handsfree ? 'STANDBY • "JARVIS" बोलें' : 'बोलने के लिए गोले पर टैप करें';
+    pill.textContent = cfg.handsfree ? '🙏 STANDBY • "JARVIS" बोलें' : 'Avatar पर टैप करके बोलें';
   }
 }
 
@@ -501,7 +609,7 @@ function addMsg(role, text) {
   box.scrollTop = box.scrollHeight;
 }
 
-// Text-to-Speech
+// Natural Hindi Female/Male Voice Selector + Speech
 function speak(text, onDone) {
   window.speechSynthesis.cancel();
   if (!text) { if (onDone) onDone(); return; }
@@ -509,52 +617,61 @@ function speak(text, onDone) {
   setState('speaking');
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'hi-IN';
-  utter.rate = 1.02;
+  utter.volume = speechVol;
+  utter.rate = 1.0;
+
+  const voices = window.speechSynthesis.getVoices();
+  const hiVoice = voices.find(v => v.lang.includes('hi') && v.name.includes('Google')) || voices.find(v => v.lang.includes('hi'));
+  if (hiVoice) utter.voice = hiVoice;
+
   utter.onend = () => {
     isSpeaking = false;
     setState('standby');
     if (onDone) onDone();
-    else if (cfg.handsfree) scheduleRestart(400);
+    else if (cfg.handsfree) scheduleRestart(350);
   };
   utter.onerror = () => {
     isSpeaking = false;
     setState('standby');
     if (onDone) onDone();
-    else if (cfg.handsfree) scheduleRestart(400);
+    else if (cfg.handsfree) scheduleRestart(350);
   };
   window.speechSynthesis.speak(utter);
 }
 
-// Wake-word Window Manager
+function doNamasteGreeting() {
+  const hour = new Date().getHours();
+  const timeGreet = hour < 12 ? 'सुप्रभात' : hour < 17 ? 'नमस्कार' : 'शुभ संध्या';
+  const greeting = `🙏 ${timeGreet} ${cfg.userName}! मैं जार्विस आपकी सेवा में हाज़िर हूँ। बताइए क्या आदेश है?`;
+  document.getElementById('namasteBadge').textContent = `🙏 नमस्ते ${cfg.userName}`;
+  addMsg('ai', greeting);
+  speak(greeting, () => {
+    startListening(true);
+  });
+}
+
 function activateAwakeWindow() {
   isAwake = true;
-  setState('listening', 'सुन रहा हूँ... बोलिए');
+  setState('listening', '🟢 सुन रहा हूँ... बोलिए');
   clearTimeout(awakeTimer);
   awakeTimer = setTimeout(() => {
     isAwake = false;
-    if (!isProcessing && !isSpeaking) {
-      setState(cfg.handsfree ? 'listening' : 'standby');
-    }
-  }, 12000);
+    if (!isProcessing && !isSpeaking) setState(cfg.handsfree ? 'listening' : 'standby');
+  }, 14000);
 }
 
-// Wake-word Extractor
 function extractWakeCommand(rawText) {
   const text = rawText.trim();
-  // Matches "Jarvis", "Hey Jarvis", "जार्विस", "हे जार्विस", "जाविश", etc.
-  const wakeRegex = /^(?:hey\s+|हे\s+|ओके\s+|ok\s+)?(?:jarvis|जार्विस|जारविस|जाविश|जर्विस)[\s,।!?-]*(.*)$/i;
+  const wakeRegex = /^(?:hey\s+|हे\s+|ओके\s+|ok\s+|अरे\s+)?(?:jarvis|जार्विस|जारविस|जाविश|जर्विस|सर्विस)[\s,।!?-]*(.*)$/i;
   const match = text.match(wakeRegex);
-  if (match) {
-    return { triggered: true, command: (match[1] || '').trim() };
-  }
+  if (match) return { triggered: true, command: (match[1] || '').trim() };
   return { triggered: false, command: text };
 }
 
-// Speech Recognition Setup
 function initRecognition() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) {
-    setState('standby', 'इस ब्राउज़र में Voice Recognition उपलब्ध नहीं है');
+    setState('standby', 'इस ब्राउज़र में Voice उपलब्ध नहीं है');
     return;
   }
   recognition = new SR();
@@ -563,9 +680,7 @@ function initRecognition() {
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
-    if (!isProcessing && !isSpeaking) {
-      setState('listening');
-    }
+    if (!isProcessing && !isSpeaking) setState('listening');
   };
 
   recognition.onresult = async (event) => {
@@ -573,21 +688,19 @@ function initRecognition() {
     if (!transcript || isSpeaking) return;
 
     if (!cfg.handsfree || isAwake) {
-      // Direct command mode
       clearTimeout(awakeTimer);
       isAwake = false;
       const cleaned = extractWakeCommand(transcript);
       const finalCmd = cleaned.triggered && cleaned.command ? cleaned.command : transcript;
       await handleUserCommand(finalCmd);
     } else {
-      // Standby wake-word mode
       const { triggered, command } = extractWakeCommand(transcript);
       if (triggered) {
         if (command) {
           await handleUserCommand(command);
         } else {
           activateAwakeWindow();
-          speak('जी, बोलिए...', () => {
+          speak(`जी ${cfg.userName}, बोलिए...`, () => {
             activateAwakeWindow();
             scheduleRestart(250);
           });
@@ -602,41 +715,30 @@ function initRecognition() {
       setState('standby', 'माइक की अनुमति (Mic Permission) दें');
       return;
     }
-    if (cfg.handsfree && !isProcessing && !isSpeaking) {
-      scheduleRestart(600);
-    }
+    if (cfg.handsfree && !isProcessing && !isSpeaking) scheduleRestart(500);
   };
 
   recognition.onend = () => {
-    if (cfg.handsfree && !isProcessing && !isSpeaking) {
-      scheduleRestart(400);
-    } else if (!cfg.handsfree && !isProcessing && !isSpeaking) {
-      setState('standby');
-    }
+    if (cfg.handsfree && !isProcessing && !isSpeaking) scheduleRestart(350);
+    else if (!cfg.handsfree && !isProcessing && !isSpeaking) setState('standby');
   };
 }
 
-function scheduleRestart(delay = 400) {
+function scheduleRestart(delay = 350) {
   clearTimeout(restartTimeout);
-  restartTimeout = setTimeout(() => {
-    startListening(false);
-  }, delay);
+  restartTimeout = setTimeout(() => startListening(false), delay);
 }
 
 function startListening(forceAwake = false) {
   if (!recognition) initRecognition();
   if (!recognition || isProcessing || isSpeaking) return;
   if (forceAwake) activateAwakeWindow();
-  try {
-    recognition.start();
-  } catch (e) {
-    // Already started
-  }
+  try { recognition.start(); } catch (e) {}
 }
 
-// Tool Implementations
+// Media & Volume Helpers
 function extractVideoId(str) {
-  const m = str.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+  const m = str.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
   if (m) return m[1];
   if (/^[A-Za-z0-9_-]{11}$/.test(str.trim())) return str.trim();
   return null;
@@ -644,31 +746,63 @@ function extractVideoId(str) {
 
 function playVideoEmbed(videoId, title) {
   const container = document.getElementById('yt-container');
-  const frame = document.getElementById('yt-frame');
   document.getElementById('yt-title').textContent = `▶ ${title}`;
-  frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
   container.style.display = 'block';
+  if (ytReady && ytPlayer && ytPlayer.loadVideoById) {
+    ytPlayer.loadVideoById(videoId);
+    ytPlayer.unMute();
+  } else {
+    pendingVideo = videoId;
+  }
 }
 
 function closePlayer() {
-  document.getElementById('yt-frame').src = '';
+  if (ytReady && ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
   document.getElementById('yt-container').style.display = 'none';
 }
 
-async function toolPlayMedia(query) {
-  const qLower = query.toLowerCase();
-  const lines = (cfg.favs || '').split('\n').map(l => l.trim()).filter(Boolean);
-  for (const line of lines) {
+function changeVolume(delta) {
+  speechVol = Math.min(1, Math.max(0.1, speechVol + delta / 100));
+  if (ytReady && ytPlayer && ytPlayer.getVolume) {
+    ytPlayer.unMute();
+    const cur = ytPlayer.getVolume();
+    const next = Math.min(100, Math.max(5, cur + delta));
+    ytPlayer.setVolume(next);
+    return next;
+  }
+  return Math.round(speechVol * 100);
+}
+
+function getSavedAartiList() {
+  return (cfg.favs || DEFAULT_FAVS).split('\n').map(l => l.trim()).filter(Boolean).map(line => {
     const [name, link] = line.split('|').map(s => s.trim());
-    if (name && link && (qLower.includes(name.toLowerCase()) || name.toLowerCase().includes(qLower))) {
-      const vid = extractVideoId(link);
-      if (vid) {
-        playVideoEmbed(vid, name);
-        return `${name} चला रहा हूँ।`;
-      }
+    return { name, link, id: extractVideoId(link || '') };
+  }).filter(item => item.name && item.id);
+}
+
+async function toolPlayMedia(query, playNext = false) {
+  const list = getSavedAartiList();
+
+  // If user asked for "dusri aarti" / next aarti
+  if (playNext && list.length > 0) {
+    currentFavIndex = (currentFavIndex + 1) % list.length;
+    const item = list[currentFavIndex];
+    playVideoEmbed(item.id, item.name);
+    return `${item.name} चला रहा हूँ।`;
+  }
+
+  const qLower = query.toLowerCase();
+  for (let i = 0; i < list.length; i++) {
+    const item = list[i];
+    if (qLower.includes(item.name.toLowerCase()) || item.name.toLowerCase().includes(qLower) ||
+        (qLower.includes('मंगला') && item.name.includes('मंगला'))) {
+      currentFavIndex = i;
+      playVideoEmbed(item.id, item.name);
+      return `${item.name} चला रहा हूँ।`;
     }
   }
 
+  // Try YouTube Data API v3 if key exists
   if (cfg.ytKey) {
     try {
       const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=${encodeURIComponent(query)}&key=${encodeURIComponent(cfg.ytKey)}`;
@@ -682,8 +816,10 @@ async function toolPlayMedia(query) {
     } catch (e) {}
   }
 
-  window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
-  return `YouTube पर ${query} खोज दिया है।`;
+  // Guaranteed fallback: open YouTube search tab
+  const win = window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
+  if (win) openedTabs.push(win);
+  return `YouTube पर ${query} खोल दिया है।`;
 }
 
 function toolOpenWebsite(site) {
@@ -696,12 +832,34 @@ function toolOpenWebsite(site) {
     youtube: 'https://www.youtube.com',
     google: 'https://www.google.com'
   };
-  let target = map[s];
-  if (!target) {
-    target = s.startsWith('http') ? s : `https://${s.includes('.') ? s : s + '.com'}`;
-  }
-  window.open(target, '_blank');
+  let target = map[s] || (s.startsWith('http') ? s : `https://${s.includes('.') ? s : s + '.com'}`);
+  const win = window.open(target, '_blank');
+  if (win) openedTabs.push(win);
   return `${site} खोल दिया है।`;
+}
+
+function toolCloseTabsAndShutdown(doShutdown = false) {
+  // Close all tabs opened by Jarvis + stop media
+  closePlayer();
+  openedTabs.forEach(w => { try { if (w && !w.closed) w.close(); } catch (e) {} });
+  openedTabs = [];
+
+  if (!doShutdown) {
+    return 'सारे खुले हुए टैब और प्लेयर बंद कर दिए हैं।';
+  }
+
+  // Trigger optional local Windows helper protocol if installed
+  try { window.location.href = 'jarvis-shutdown://now'; } catch (e) {}
+  return 'सारे टैब बंद कर दिए हैं। सुरक्षा कारणों से ब्राउज़र सीधे Windows बंद नहीं कर सकता — यदि आपने Settings से PC Shutdown Helper चलाया है तो लैपटॉप बंद हो जाएगा, वरना Alt + F4 दबाकर Shut Down चुनें।';
+}
+
+function downloadShutdownHelper() {
+  const batContent = `@echo off\r\necho Closing all browser tabs and shutting down PC in 5 seconds...\r\ntaskkill /F /IM chrome.exe /T >nul 2>&1\r\nshutdown /s /t 5\r\n`;
+  const blob = new Blob([batContent], { type: 'application/bat' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Jarvis_Shutdown_PC.bat';
+  a.click();
 }
 
 function toolSendWhatsApp(recipient, message) {
@@ -720,12 +878,10 @@ function toolSendWhatsApp(recipient, message) {
       }
     }
   }
-
-  if (!phone) {
-    return `${recipient} का नंबर कॉन्टैक्ट्स में नहीं मिला। कृपया सेटिंग्स में नंबर जोड़ें।`;
-  }
+  if (!phone) return `${recipient} का नंबर कॉन्टैक्ट्स में नहीं मिला। कृपया सेटिंग्स में नंबर जोड़ें।`;
   if (phone.length === 10) phone = '91' + phone;
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+  const win = window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+  if (win) openedTabs.push(win);
   return `${matchedName} के लिए WhatsApp मैसेज तैयार कर दिया है, बस Send दबा दें।`;
 }
 
@@ -735,16 +891,10 @@ function addTimerBadge(label, timeoutId) {
   renderBadges();
   return id;
 }
-
 function removeTimerBadge(id) {
   const idx = activeTimers.findIndex(t => t.id === id);
-  if (idx !== -1) {
-    clearTimeout(activeTimers[idx].timeoutId);
-    activeTimers.splice(idx, 1);
-    renderBadges();
-  }
+  if (idx !== -1) { clearTimeout(activeTimers[idx].timeoutId); activeTimers.splice(idx, 1); renderBadges(); }
 }
-
 function renderBadges() {
   const wrap = document.getElementById('badgesWrap');
   wrap.innerHTML = '';
@@ -755,7 +905,6 @@ function renderBadges() {
     wrap.appendChild(el);
   });
 }
-
 function toolSetTimer(minutes, label = 'टाइमर') {
   const ms = Math.max(1, Number(minutes)) * 60000;
   let badgeId;
@@ -768,7 +917,6 @@ function toolSetTimer(minutes, label = 'टाइमर') {
   badgeId = addTimerBadge(`${minutes} मिनट (${label})`, tid);
   return `${minutes} मिनट का ${label} लगा दिया है।`;
 }
-
 function toolSetReminder(time24, message) {
   const [hh, mm] = time24.split(':').map(Number);
   if (isNaN(hh) || isNaN(mm)) return 'समय समझ नहीं आया, कृपया दोबारा बोलें।';
@@ -776,23 +924,133 @@ function toolSetReminder(time24, message) {
   const target = new Date();
   target.setHours(hh, mm, 0, 0);
   if (target <= now) target.setDate(target.getDate() + 1);
-  const diff = target - now;
   let badgeId;
   const tid = setTimeout(() => {
     removeTimerBadge(badgeId);
     const alertMsg = `${cfg.userName}, याद दिलाने का समय हो गया है: ${message}`;
     addMsg('ai', alertMsg);
     speak(alertMsg);
-  }, diff);
+  }, target - now);
   badgeId = addTimerBadge(`${time24} - ${message}`, tid);
   return `${time24} बजे के लिए "${message}" का रिमाइंडर लगा दिया है।`;
 }
 
-// Gemini Brain (Function Calling + Live Search Fallback)
+// Instant Local Commands (100% Reliable even without Gemini API)
+async function tryLocalCommand(text) {
+  const t = text.toLowerCase().trim();
+
+  // Namaste
+  if (/^(?:नमस्ते|नमस्कार|hello|hi|प्रणाम)/.test(t)) {
+    const hour = new Date().getHours();
+    const g = hour < 12 ? 'सुप्रभात' : hour < 17 ? 'नमस्कार' : 'शुभ संध्या';
+    return `🙏 ${g} ${cfg.userName}! बताइए मैं आपकी क्या सहायता करूँ?`;
+  }
+
+  // Volume Control
+  if (/(?:आवाज़|साउंड|वॉल्यूम|sound|volume)/.test(t)) {
+    if (/(?:तेज़|बढ़ा|ज्यादा|ऊँची|high|up|increase)/.test(t)) {
+      const v = changeVolume(25);
+      return `आवाज़ बढ़ाकर ${v} प्रतिशत कर दी है।`;
+    }
+    if (/(?:कम|धीमी|घटा|नीचे|low|down|decrease)/.test(t)) {
+      const v = changeVolume(-25);
+      return `आवाज़ कम करके ${v} प्रतिशत कर दी है।`;
+    }
+    if (/(?:म्यूट|बंद|mute)/.test(t)) {
+      if (ytReady && ytPlayer && ytPlayer.mute) ytPlayer.mute();
+      return 'आवाज़ म्यूट कर दी है।';
+    }
+  }
+
+  // Close Tabs / Shutdown
+  if (/(?:शटडाउन|शट डाउन|shut\s*down|बंद करो|लैपटॉप बंद)/.test(t)) {
+    if (/(?:शटडाउन|शट डाउन|shut\s*down|लैपटॉप बंद|कंप्यूटर बंद)/.test(t)) {
+      return toolCloseTabsAndShutdown(true);
+    }
+    if (/(?:टैब|tab|सब बंद|सारे बंद|आरती बंद|गाना बंद)/.test(t)) {
+      return toolCloseTabsAndShutdown(false);
+    }
+  }
+
+  // Next / Another Aarti
+  if (/(?:दूसरी आरती|अगली आरती|कोई और आरती|next aarti|change aarti|दूसरा भजन)/.test(t)) {
+    return await toolPlayMedia('', true);
+  }
+
+  // Direct Aarti / Bhajan Play Command
+  if (/(?:आरती|चालीसा|मंत्र|भजन|लगाओ|बजाओ|चलाओ|play)/.test(t)) {
+    const cleanQuery = t.replace(/(?:जार्विस|jarvis|लगाओ|बजाओ|चलाओ|सुनाओ|play|please)/gi, '').trim();
+    if (cleanQuery.length >= 3) {
+      return await toolPlayMedia(cleanQuery, false);
+    }
+  }
+
+  // Time & Date
+  if (/(?:टाइम|समय|कितने बजे|time)/.test(t) && t.length < 35) {
+    const timeStr = new Date().toLocaleTimeString('hi-IN', { hour: 'numeric', minute: '2-digit' });
+    return `${cfg.userName}, अभी ${timeStr} हो रहे हैं।`;
+  }
+  if (/(?:तारीख|आज कौन सा दिन|आज क्या वार|date|today)/.test(t) && t.length < 35) {
+    const dateStr = new Date().toLocaleDateString('hi-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    return `आज ${dateStr} है।`;
+  }
+
+  // Quick Websites
+  if (/(?:खोलो|ओपन|open)/.test(t)) {
+    if (t.includes('gmail') || t.includes('जीमेल')) return toolOpenWebsite('gmail');
+    if (t.includes('maps') || t.includes('मैप्स')) return toolOpenWebsite('maps');
+    if (t.includes('whatsapp') || t.includes('व्हाट्सएप')) return toolOpenWebsite('whatsapp');
+    if (t.includes('youtube') || t.includes('यूट्यूब')) return toolOpenWebsite('youtube');
+  }
+
+  return null;
+}
+
+// Gemini Request with Model Auto-Fallback
+async function callGeminiWithFallback(payload) {
+  const models = Array.from(new Set([cfg.model, 'gemini-2.0-flash', 'gemini-flash-latest', 'gemini-1.5-flash'].filter(Boolean)));
+  let lastError = 'API error';
+
+  for (const m of models) {
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent?key=${encodeURIComponent(cfg.key)}`;
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok && data?.candidates?.[0]?.content?.parts) {
+        if (cfg.model !== m) {
+          cfg.model = m;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+        }
+        return { ok: true, data };
+      }
+      lastError = data?.error?.message || `HTTP ${res.status}`;
+      if (res.status === 400 && /API key not valid/i.test(lastError)) {
+        return { ok: false, error: 'Gemini API Key अमान्य है। कृपया ⚙ सेटिंग्स में सही Key डालें।' };
+      }
+    } catch (e) {
+      lastError = e.message;
+    }
+  }
+  return { ok: false, error: lastError };
+}
+
 async function handleUserCommand(userText) {
   addMsg('user', userText);
+
+  // 1. Instant Local Execution First
+  const localReply = await tryLocalCommand(userText);
+  if (localReply) {
+    addMsg('ai', localReply);
+    speak(localReply);
+    return;
+  }
+
   if (!cfg.key) {
-    const err = 'कृपया पहले ऊपर दाईं ओर ⚙ सेटिंग्स में जाकर अपनी Gemini API Key डालें।';
+    const err = 'कृपया ऊपर दाईं ओर ⚙ सेटिंग्स में जाकर अपनी Gemini API Key डालें, ताकि मैं हर सवाल का जवाब दे सकूँ।';
     addMsg('ai', err);
     speak(err);
     return;
@@ -801,76 +1059,36 @@ async function handleUserCommand(userText) {
   isProcessing = true;
   setState('thinking');
 
-  const sysPrompt = `आप J.A.R.V.I.S. हैं। उपयोगकर्ता को "${cfg.userName}" कहकर सम्मान से संबोधित करें। हमेशा सरल, स्पष्ट हिंदी (देवनागरी) में संक्षिप्त (1-3 वाक्य) जवाब दें। वर्तमान समय: ${new Date().toLocaleString('hi-IN')}। यदि उपयोगकर्ता आरती/भजन/गाना चलाने को कहे तो play_media चलाएं। वेबसाइट खोलने के लिए open_website चलाएं। WhatsApp मैसेज के लिए send_whatsapp चलाएं। टाइमर के लिए set_timer और किसी निश्चित समय के रिमाइंडर के लिए set_reminder (24-घंटे HH:MM फॉर्मेट) चलाएं।`;
+  const sysPrompt = `आप J.A.R.V.I.S. हैं। उपयोगकर्ता को "${cfg.userName}" कहकर सम्मान से संबोधित करें। हमेशा सरल, स्पष्ट हिंदी (देवनागरी) में संक्षिप्त (1-3 वाक्य) जवाब दें। वर्तमान समय: ${new Date().toLocaleString('hi-IN')}। WhatsApp मैसेज के लिए send_whatsapp, टाइमर के लिए set_timer, रिमाइंडर के लिए set_reminder (HH:MM 24-hour), वेबसाइट खोलने के लिए open_website, और भजन/गाने के लिए play_media का उपयोग करें।`;
 
   const functionTools = [{
     function_declarations: [
-      {
-        name: 'play_media',
-        description: 'Play an aarti, bhajan, mantra, or song on YouTube',
-        parameters: { type: 'OBJECT', properties: { query: { type: 'STRING' } }, required: ['query'] }
-      },
-      {
-        name: 'open_website',
-        description: 'Open a website like Gmail, Maps, WhatsApp, YouTube or any URL',
-        parameters: { type: 'OBJECT', properties: { site: { type: 'STRING' } }, required: ['site'] }
-      },
-      {
-        name: 'send_whatsapp',
-        description: 'Prepare a WhatsApp message to a contact name or phone number',
-        parameters: {
-          type: 'OBJECT',
-          properties: {
-            recipient: { type: 'STRING' },
-            message: { type: 'STRING' }
-          },
-          required: ['recipient', 'message']
-        }
-      },
-      {
-        name: 'set_timer',
-        description: 'Set a countdown timer in minutes',
-        parameters: {
-          type: 'OBJECT',
-          properties: {
-            minutes: { type: 'NUMBER' },
-            label: { type: 'STRING' }
-          },
-          required: ['minutes']
-        }
-      },
-      {
-        name: 'set_reminder',
-        description: 'Set a reminder at a specific 24-hour time HH:MM',
-        parameters: {
-          type: 'OBJECT',
-          properties: {
-            time24: { type: 'STRING', description: '24-hour format HH:MM e.g. 08:00 or 17:30' },
-            message: { type: 'STRING' }
-          },
-          required: ['time24', 'message']
-        }
-      }
+      { name: 'play_media', description: 'Play an aarti, bhajan, or song', parameters: { type: 'OBJECT', properties: { query: { type: 'STRING' } }, required: ['query'] } },
+      { name: 'open_website', description: 'Open website or URL', parameters: { type: 'OBJECT', properties: { site: { type: 'STRING' } }, required: ['site'] } },
+      { name: 'send_whatsapp', description: 'Send WhatsApp message', parameters: { type: 'OBJECT', properties: { recipient: { type: 'STRING' }, message: { type: 'STRING' } }, required: ['recipient', 'message'] } },
+      { name: 'set_timer', description: 'Set countdown timer in minutes', parameters: { type: 'OBJECT', properties: { minutes: { type: 'NUMBER' }, label: { type: 'STRING' } }, required: ['minutes'] } },
+      { name: 'set_reminder', description: 'Set reminder at 24h time HH:MM', parameters: { type: 'OBJECT', properties: { time24: { type: 'STRING' }, message: { type: 'STRING' } }, required: ['time24', 'message'] } }
     ]
   }];
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cfg.model)}:generateContent?key=${encodeURIComponent(cfg.key)}`;
-
   try {
-    // 1. Check action tools first
-    let res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: sysPrompt }] },
-        contents: [{ role: 'user', parts: [{ text: userText }] }],
-        tools: functionTools
-      })
+    const needsLiveSearch = /(?:मौसम|weather|खबर|news|समाचार|स्कोर|score|मैच|भाव|price|रेट|सोना|चांदी)/i.test(userText);
+    const primaryRes = await callGeminiWithFallback({
+      system_instruction: { parts: [{ text: sysPrompt }] },
+      contents: [{ role: 'user', parts: [{ text: userText }] }],
+      tools: needsLiveSearch ? [{ google_search: {} }] : functionTools
     });
-    let data = await res.json();
-    const parts = data?.candidates?.[0]?.content?.parts || [];
-    const fnCall = parts.find(p => p.functionCall)?.functionCall;
 
+    if (!primaryRes.ok) {
+      isProcessing = false;
+      const errMsg = `त्रुटि: ${primaryRes.error}`;
+      addMsg('ai', errMsg);
+      speak('माफ़ कीजिए, कनेक्शन में त्रुटि आई है।');
+      return;
+    }
+
+    const parts = primaryRes.data?.candidates?.[0]?.content?.parts || [];
+    const fnCall = parts.find(p => p.functionCall)?.functionCall;
     let replyText = '';
 
     if (fnCall) {
@@ -881,39 +1099,28 @@ async function handleUserCommand(userText) {
       else if (fnCall.name === 'set_timer') replyText = toolSetTimer(args.minutes, args.label || 'टाइमर');
       else if (fnCall.name === 'set_reminder') replyText = toolSetReminder(args.time24, args.message);
     } else {
-      // 2. General / Live Google Search query
-      const searchRes = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: sysPrompt }] },
-          contents: [{ role: 'user', parts: [{ text: userText }] }],
-          tools: [{ google_search: {} }]
-        })
-      });
-      const searchData = await searchRes.json();
-      replyText = searchData?.candidates?.[0]?.content?.parts?.map(p => p.text).join(' ').trim()
-        || parts.map(p => p.text).join(' ').trim()
-        || 'माफ़ कीजिए, मैं अभी इसका उत्तर नहीं ला पाया।';
+      replyText = parts.map(p => p.text || '').join(' ').trim();
     }
 
     isProcessing = false;
-    addMsg('ai', replyText);
-    speak(replyText);
+    const finalOut = replyText || 'माफ़ कीजिए, मैं अभी इसका उत्तर नहीं ला पाया।';
+    addMsg('ai', finalOut);
+    speak(finalOut);
   } catch (err) {
     isProcessing = false;
-    const msg = 'नेटवर्क या API कुंजी में कोई समस्या आ रही है।';
-    addMsg('ai', msg);
-    speak(msg);
+    addMsg('ai', `नेटवर्क त्रुटि: ${err.message}`);
+    speak('नेटवर्क में समस्या आ रही है।');
   }
 }
 
-// Event Listeners
+// UI Events
 document.getElementById('reactorBtn').addEventListener('click', () => {
   window.speechSynthesis.cancel();
   isSpeaking = false;
   startListening(true);
 });
+
+document.getElementById('btnNamaste').addEventListener('click', doNamasteGreeting);
 
 document.getElementById('btnStopAll').addEventListener('click', () => {
   window.speechSynthesis.cancel();
@@ -932,16 +1139,13 @@ document.getElementById('btnCloseSettings').addEventListener('click', () => {
 });
 document.getElementById('btnSaveSettings').addEventListener('click', saveCfg);
 
-// Boot
 window.addEventListener('DOMContentLoaded', async () => {
   loadCfg();
   if (cfg.autoStart) {
     const msg = await toolPlayMedia(cfg.autoStart);
     addMsg('ai', msg);
   }
-  if (cfg.handsfree) {
-    startListening(false);
-  }
+  if (cfg.handsfree) startListening(false);
 });
 </script>
 </body>
