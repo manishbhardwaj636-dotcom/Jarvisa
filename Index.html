@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<title>Jarvis</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--c:#2de2ff;--c2:#0a6cff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:radial-gradient(ellipse at center,#06182b 0%,#02060d 70%);color:#cfefff;font-family:"Segoe UI","Nirmala UI",system-ui,sans-serif;overflow:hidden;user-select:none}
+body.thinking{--c:#ffcc4d}
+#top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:20px 30px;z-index:5}
+#clock{font-size:52px;font-weight:200;letter-spacing:3px;color:var(--c);text-shadow:0 0 18px rgba(45,226,255,.5)}
+#date{font-size:18px;opacity:.75;margin-top:2px}
+#btns button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#cfefff;font-size:22px;width:46px;height:46px;border-radius:50%;margin-left:8px;cursor:pointer}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding-bottom:120px}
+#orb{position:relative;width:min(44vh,44vw);height:min(44vh,44vw);cursor:pointer}
+.ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent}
+.r1{border-top-color:var(--c);border-bottom-color:var(--c);animation:spin 6s linear infinite;box-shadow:0 0 25px rgba(45,226,255,.3)}
+.r2{inset:9%;border-left-color:var(--c2);border-right-color:var(--c2);animation:spin 9s linear infinite reverse}
+.r3{inset:18%;border:1px dashed rgba(45,226,255,.5);animation:spin 20s linear infinite}
+.core{position:absolute;inset:28%;border-radius:50%;background:radial-gradient(circle,var(--c) 0%,rgba(10,108,255,.35) 55%,transparent 72%);animation:pulse 3s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(1.12);opacity:.8}}
+body.listening .core{animation-duration:1.2s}
+body.thinking .r1{animation-duration:1.4s}
+body.speaking .core{animation-duration:.5s}
+#label{margin-top:18px;font-size:22px;color:var(--c);height:30px;letter-spacing:1px}
+#talk{position:fixed;bottom:26px;left:8%;right:8%;text-align:center;z-index:4}
+#you{font-size:18px;opacity:.6;min-height:26px}
+#bot{font-size:34px;color:#fff;text-shadow:0 0 14px rgba(45,226,255,.5);min-height:90px;line-height:1.35}
+#dbg{position:fixed;left:12px;top:92px;font-size:14px;color:#ffb4a2;z-index:6;max-width:60vw;user-select:text}
+#media{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:170px;width:min(560px,60vw);background:rgba(2,10,20,.92);border:1px solid rgba(45,226,255,.4);border-radius:12px;z-index:6;overflow:hidden}
+body.media #media{display:block}
+body.media #orb{width:20vmin;height:20vmin}
+body.media #stage{justify-content:flex-start;padding-top:100px}
+#mbar{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:16px}
+#mtitle{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#mbar a{color:var(--c);font-size:14px}
+#mstop{background:#c0392b;color:#fff;border:0;border-radius:8px;padding:8px 14px;font-size:16px;cursor:pointer}
+#mbody iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
+#mbody audio{width:100%;display:block}
+#start{position:fixed;inset:0;background:rgba(2,6,13,.96);z-index:20;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;text-align:center}
+#start h1{font-size:46px;font-weight:300;color:var(--c);margin-bottom:14px}
+#start p{font-size:22px;opacity:.8}
+#settings{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:30;align-items:center;justify-content:center;user-select:text}
+#settings.open{display:flex}
+#sbox{background:#0a1724;border:1px solid rgba(45,226,255,.4);border-radius:14px;padding:22px;width:min(560px,92vw);max-height:92vh;overflow:auto}
+#sbox h2{font-weight:400;margin-bottom:12px;color:var(--c)}
+#sbox label{display:block;margin-top:12px;font-size:14px;opacity:.85}
+#sbox input,#sbox textarea{width:100%;margin-top:4px;padding:9px;border-radius:8px;border:1px solid #2c4a63;background:#06101a;color:#fff;font-size:15px;font-family:inherit}
+#sbox textarea{height:110px}
+#sbox small{opacity:.6;font-size:12px}
+#sbox .row{display:flex;gap:10px;margin-top:16px;justify-content:flex-end}
+#sbox button{padding:9px 18px;border-radius:8px;border:0;font-size:15px;cursor:pointer}
+#save{background:var(--c);color:#02101a}
+#cancel{background:#243645;color:#fff}
+</style>
+</head>
+<body>
+<div id="top">
+  <div><div id="clock">--:--</div><div id="date"></div></div>
+  <div id="btns"><button id="mic" title="माइक">🎤</button><button id="gear" title="सेटिंग">⚙</button></div>
+</div>
+
+<div id="stage">
+  <div id="orb"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="core"></div></div>
+  <div id="label"></div>
+</div>
+
+<div id="media">
+  <div id="mbar"><span id="mtitle"></span><a id="mopen" target="_blank" rel="noopener">YouTube पर खोलें</a><button id="mstop">⏹ बंद करें</button></div>
+  <div id="mbody"></div>
+</div>
+
+<div id="talk"><div id="you"></div><div id="bot"></div></div>
+<div id="dbg"></div>
+
+<div id="start"><h1>🙏 नमस्ते</h1><p>शुरू करने के लिए स्क्रीन पर कहीं भी छुएँ या कोई भी बटन दबाएँ</p></div>
+
+<div id="settings"><div id="sbox">
+  <h2>सेटिंग (एक बार भरनी है)</h2>
+  <label>Gemini API Key <small>(aistudio.google.com/apikey से मुफ़्त मिलती है)</small>
+    <input id="s_key" type="password" autocomplete="off"></label>
+  <label>Model <small>(जैसा है वैसा रहने दें)</small>
+    <input id="s_model" type="text"></label>
+  <label>कैसे बुलाए <small>(जैसे: मम्मी जी)</small>
+    <input id="s_name" type="text"></label>
+  <label>आरती / भजन की सूची <small>(हर लाइन में: नाम | YouTube लिंक)</small>
+    <textarea id="s_favs" placeholder="सुबह की आरती | https://www.youtube.com/watch?v=XXXXXXXXXXX&#10;हनुमान चालीसा | https://www.youtube.com/watch?v=YYYYYYYYYYY"></textarea></label>
+  <label>शुरू होते ही कौन सी चले <small>(ऊपर की सूची का नाम, ख़ाली छोड़ें तो नहीं चलेगी)</small>
+    <input id="s_start" type="text"></label>
+  <div class="row"><button id="cancel">बंद</button><button id="save">सेव करें</button></div>
+</div></div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const store={
+  get(k,d){try{const v=localStorage.getItem('jv_'+k);return v===null?d:v}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('jv_'+k,v)}catch(e){}}
+};
+function loadCfg(){return{key:store.get('key',''),model:store.get('model','gemini-flash-latest'),name:store.get('name','मम्मी जी'),favs:store.get('favs',''),start:store.get('start','')}}
+let cfg=loadCfg();
+
+let started=false,state='idle',busy=false,speaking=false,listening=false,micOn=true,mediaOn=false,awake=false,wakeTimer=null,pending=null,rec=null,voices=[];
+const WAKE=/jarvis|jarwis|जार्विस|जारविस|जार्वीस|जर्विस|जाविस|ज़ार्विस|जार्विज/i;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const hist=[];
+
+/* ---------- घड़ी ---------- */
+function tick(){
+  const d=new Date();
+  $('clock').textContent=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  $('date').textContent=d.toLocaleDateString('hi-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+tick();setInterval(tick,1000);
+
+/* ---------- स्थिति ---------- */
+function setState(s){
+  state=s;
+  ['listening','thinking','speaking'].forEach(c=>document.body.classList.toggle(c,c===s));
+  const m={listening:'बोलिए…',thinking:'एक पल…',speaking:''};
+  let t=m[s];
+  if(t===undefined){t=!micOn?'माइक बंद है':(mediaOn?'"जार्विस" बोलकर बुलाइए':'')}
+  $('label').textContent=t;
+}
+
+/* ---------- आवाज़ (TTS) ---------- */
+function loadVoices(){voices=window.speechSynthesis?speechSynthesis.getVoices():[]}
+if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+function pickVoice(){
+  const hi=voices.filter(v=>v.lang&&v.lang.toLowerCase().startsWith('hi'));
+  return hi.find(v=>/google/i.test(v.name))||hi[0]||voices.find(v=>/en-in/i.test(v.lang))||null;
+}
+function say(text){
+  return new Promise(res=>{
+    let shown=false;
+    const show=()=>{if(!shown){shown=true;$('bot').textContent=text}};
+    speaking=true;setState('speaking');
+    try{rec&&rec.abort()}catch(e){}
+    let done=false;
+    const fin=()=>{if(done)return;done=true;show();speaking=false;if(!busy)setState('idle');res();startRec()};
+    if(!window.speechSynthesis){show();setTimeout(fin,2500);return}
+    setTimeout(show,3000);
+    const u=new SpeechSynthesisUtterance(String(text).replace(/[*_#`]/g,''));
+    const v=pickVoice();
+    if(v){u.voice=v;u.lang=v.lang}else{u.lang='hi-IN'}
+    u.rate=0.95;
+    u.onstart=show;u.onend=fin;u.onerror=fin;
+    speechSynthesis.speak(u);
+    setTimeout(fin,Math.max(5000,String(text).length*180));
+  });
+}
+let q=Promise.resolve();
+const sayQ=t=>(q=q.then(()=>say(t)));
+
+/* ---------- सुनना (STT) ---------- */
+function initRec(){
+  if(!SR){$('bot').textContent='यह ब्राउज़र आवाज़ नहीं समझता। Google Chrome में खोलिए।';return}
+  rec=new SR();
+  rec.lang='hi-IN';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
+  rec.onstart=()=>{listening=true;setState('listening')};
+  rec.onend=()=>{
+    listening=false;
+    if(state==='listening')setState('idle');
+    setTimeout(startRec,400);
+  };
+  rec.onerror=e=>{
+    if(e.error==='not-allowed'||e.error==='service-not-allowed'){
+      micOn=false;$('mic').textContent='🔇';
+      $('bot').textContent='माइक की अनुमति दीजिए (Chrome में ऊपर Allow दबाइए), फिर 🎤 छुएँ।';
+    }
+    $('dbg').textContent='mic: '+e.error;
+  };
+  rec.onresult=e=>{
+    let t='',fin=false;
+    for(let i=e.resultIndex;i<e.results.length;i++){t+=e.results[i][0].transcript;if(e.results[i].isFinal)fin=true}
+    $('you').textContent=t;
+    if(mediaOn&&!awake){
+      /* आरती चलते समय सिर्फ़ "जार्विस" सुनना है */
+      if(fin&&WAKE.test(t)){
+        const rest=t.replace(WAKE,'').replace(/^[\s,।.]+/,'').trim();
+        if(rest.length>2){goAwake(true);handle(rest)}else goAwake(false);
+      }
+      return;
+    }
+    if(fin)handle(t.trim());
+  };
+}
+function startRec(){
+  if(!started||!rec||!micOn||busy||speaking||listening||$('settings').classList.contains('open'))return;
+  try{rec.start()}catch(e){}
+}
+function goAwake(quiet){
+  if(awake)return;
+  awake=true;pauseMedia();
+  clearTimeout(wakeTimer);
+  wakeTimer=setTimeout(()=>{if(awake&&!busy){awake=false;resumeMedia()}},12000);
+  if(!quiet){try{rec&&rec.abort()}catch(e){}sayQ('जी, बोलिए।')}
+}
+
+/* ---------- Gemini ---------- */
+const TOOLS=[
+ {name:'play_media',description:'आरती, भजन या गाना सूची में से चलाओ',parameters:{type:'OBJECT',properties:{name:{type:'STRING',description:'सूची में से नाम'}},required:['name']}},
+ {name:'stop_media',description:'चल रही आरती/भजन/वीडियो बंद करो'},
+ {name:'set_timer',description:'टाइमर लगाओ',parameters:{type:'OBJECT',properties:{minutes:{type:'NUMBER',description:'मिनट'},label:{type:'STRING',description:'किसलिए'}},required:['minutes']}}
+];
+function parseFavs(){
+  return cfg.favs.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const i=l.indexOf('|');return i<0?null:{name:l.slice(0,i).trim(),url:l.slice(i+1).trim()};
+  }).filter(f=>f&&f.name&&f.url);
+}
+function findFav(n){
+  const list=parseFavs();n=(n||'').toLowerCase().trim();
+  if(!n&&list.length===1)return list[0];
+  return list.find(x=>x.name.toLowerCase()===n)||list.find(x=>n&&(x.name.toLowerCase().includes(n)||n.includes(x.name.toLowerCase())))||null;
+}
+function sysPrompt(){
+  const names=parseFavs().map(f=>f.name).join(', ')||'(सूची खाली है)';
+  const now=new Date().toLocaleString('hi-IN',{dateStyle:'full',timeStyle:'short'});
+  return `तुम "जार्विस" हो, ${cfg.name} के घर का आवाज़ वाला सहायक। नियम: `+
+  `1) जवाब बहुत छोटा रखो, ज़्यादातर एक छोटा वाक्य, ज़्यादा से ज़्यादा दो। `+
+  `2) हिंदी में देवनागरी लिपि में बोलो ताकि आवाज़ सही पढ़े। `+
+  `3) आदर से "आप" कहकर बात करो, ${cfg.name} कहकर बुला सकते हो पर हर बार नहीं। `+
+  `4) अपने बारे में बोलते समय लिंग-निरपेक्ष शब्द रखो, यानी "रहा" या "रही" से बचो। `+
+  `5) कोई सूची, तारांकन, इमोजी या मार्कडाउन मत लिखो। `+
+  `6) सेहत या दवा के सवाल पर सावधान रहो और डॉक्टर से पूछने को कहो। `+
+  `7) आरती, भजन या गाना चलाने को कहें तो play_media टूल से सूची में से चलाओ, रोकने को कहें तो stop_media, टाइमर के लिए set_timer। उपलब्ध सूची: ${names}। `+
+  `8) अभी की तारीख और समय: ${now}।`;
+}
+async function callGemini(contents){
+  const body={system_instruction:{parts:[{text:sysPrompt()}]},contents,tools:[{function_declarations:TOOLS}],generationConfig:{temperature:0.7,maxOutputTokens:1024}};
+  const tryList=[cfg.model,'gemini-3.5-flash-lite','gemini-3.1-flash-lite','gemini-3.8-flash','gemini-3.6-flash','gemini-flash-latest','gemini-2.5-flash-lite','gemini-2.5-flash'].filter((m,i,a)=>m&&a.indexOf(m)===i);
+  let lastErr=null;
+  for(let round=0;round<2;round++){
+   if(round>0)await new Promise(r=>setTimeout(r,2000));
+   for(const model of tryList){
+    let r;
+    try{
+      r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{
+        method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':cfg.key},body:JSON.stringify(body)
+      });
+    }catch(e){throw new Error('NETWORK '+(e&&e.message||e))}
+    if(r.ok){
+      if(model!==cfg.model){cfg.model=model;store.set('model',model)}
+      return r.json();
+    }
+    const t=await r.text();
+    lastErr=new Error('HTTP '+r.status+' ['+model+'] '+t.slice(0,220));
+    const retryable=[404,429,500,502,503,504].includes(r.status)||(r.status===400&&/model/i.test(t)&&/not found|not supported/i.test(t));
+    if(!retryable)throw lastErr;
+   }
+  }
+  throw lastErr;
+}
+function runTool(n,a){
+  if(n==='play_media'){
+    const f=findFav(a.name);
+    if(!f)return{ok:false,error:'सूची में नहीं मिला',available:parseFavs().map(x=>x.name)};
+    pending=f;return{ok:true,playing:f.name};
+  }
+  if(n==='stop_media'){stopMedia(true);pending=null;return{ok:true}}
+  if(n==='set_timer'){
+    const m=Number(a.minutes);if(!(m>0))return{ok:false};
+    const lab=a.label||'टाइमर';
+    setTimeout(()=>{sayQ(`${cfg.name}, ${lab} का समय पूरा हो गया।`)},m*60000);
+    return{ok:true,minutes:m};
+  }
+  return{ok:false,error:'unknown tool'};
+}
+async function ask(text){
+  hist.push({role:'user',parts:[{text}]});
+  let contents=hist.slice(-12);
+  while(contents.length&&contents[0].role!=='user')contents.shift();
+  for(let i=0;i<3;i++){
+    const data=await callGemini(contents);
+    const cand=data.candidates&&data.candidates[0];
+    const parts=(cand&&cand.content&&cand.content.parts)||[];
+    const calls=parts.filter(p=>p.functionCall);
+    if(!calls.length){
+      const t=parts.map(p=>p.text||'').join('').trim()||'जी, फिर से बोलिए।';
+      hist.push({role:'model',parts:[{text:t}]});
+      return t;
+    }
+    contents=contents.concat([{role:'model',parts}]);
+    const resp=calls.map(p=>({functionResponse:{name:p.functionCall.name,response:runTool(p.functionCall.name,p.functionCall.args||{})}}));
+    contents=contents.concat([{role:'user',parts:resp}]);
+  }
+  return 'ठीक है।';
+}
+function errText(e){
+  const m=String(e&&e.message||e);
+  if(!navigator.onLine)return 'इंटरनेट नहीं चल रहा है।';
+  if(/HTTP (429|500|502|503|504)/.test(m))return 'Gemini अभी बहुत व्यस्त है, थोड़ी देर बाद फिर पूछिए।';
+  if(/HTTP 40[013]/.test(m))return 'Gemini की चाबी में दिक्कत है। सेटिंग देखनी होगी।';
+  $('bot').textContent='';
+  return 'कुछ गड़बड़ हो गई, फिर से बोलिए।';
+}
+async function handle(text){
+  if(!text||busy)return;
+  busy=true;setState('thinking');
+  try{
+    const reply=await ask(text);
+    await sayQ(reply);
+    if(pending){const f=pending;pending=null;showMedia(f)}
+  }catch(e){
+    if(hist.length&&hist[hist.length-1].role==='user')hist.pop();
+    $('dbg').textContent='⚠ '+String(e.message||e).slice(0,300);
+    console.error(e);
+    await sayQ(errText(e));
+  }
+  busy=false;setState('idle');
+  awake=false;clearTimeout(wakeTimer);
+  if(mediaOn)resumeMedia();
+  startRec();
+}
+
+/* ---------- आरती / मीडिया ---------- */
+function ytEmbed(u){
+  try{
+    const x=new URL(u.trim());let v=x.searchParams.get('v'),l=x.searchParams.get('list');
+    if(x.hostname.includes('youtu.be'))v=x.pathname.slice(1);
+    if(!v&&x.pathname.startsWith('/shorts/'))v=x.pathname.split('/')[2];
+    if(v)return 'https://www.youtube.com/embed/'+v+'?autoplay=1&rel=0&enablejsapi=1'+(l?'&list='+l:'');
+    if(l)return 'https://www.youtube.com/embed/videoseries?list='+l+'&autoplay=1&rel=0&enablejsapi=1';
+  }catch(e){}
+  return null;
+}
+function showMedia(f){
+  stopMedia(true);
+  mediaOn=true;document.body.classList.add('media');
+  $('mtitle').textContent=f.name;
+  const body=$('mbody');body.innerHTML='';
+  if(/^https?:/i.test(f.url)){
+    $('mopen').href=f.url;$('mopen').style.display='';
+    const e=ytEmbed(f.url);
+    if(e){const ifr=document.createElement('iframe');ifr.src=e;ifr.allow='autoplay; encrypted-media';ifr.allowFullscreen=true;ifr.referrerPolicy='strict-origin-when-cross-origin';body.appendChild(ifr)}
+    else body.textContent='यह लिंक नहीं चल सकता';
+    if(location.protocol==='file:')$('dbg').textContent='YouTube वीडियो file:// से नहीं चलता, पेज को https पर रखिए (GitHub Pages)।';
+  }else{
+    $('mopen').style.display='none';
+    const a=document.createElement('audio');
+    a.controls=true;a.autoplay=true;a.src=encodeURI(f.url);
+    a.onended=()=>stopMedia();
+    a.onerror=()=>{stopMedia();sayQ('यह फ़ाइल नहीं मिली।')};
+    body.appendChild(a);
+  }
+  setState(state);
+}
+function mediaCmd(c){
+  if(!mediaOn)return;
+  const el=$('mbody').firstChild;if(!el)return;
+  if(el.tagName==='AUDIO'){if(c==='pauseVideo')el.pause();else el.play().catch(()=>{});return}
+  try{el.contentWindow.postMessage(JSON.stringify({event:'command',func:c,args:''}),'*')}catch(e){}
+}
+function pauseMedia(){mediaCmd('pauseVideo')}
+function resumeMedia(){mediaCmd('playVideo')}
+function stopMedia(silent){
+  mediaOn=false;awake=false;
+  $('mbody').innerHTML='';document.body.classList.remove('media');
+  if(!silent){setState('idle');startRec()}
+}
+$('mstop').onclick=()=>stopMedia();
+
+/* ---------- बटन और कीबोर्ड ---------- */
+function toggleMic(){
+  micOn=!micOn;$('mic').textContent=micOn?'🎤':'🔇';
+  if(!micOn){try{rec&&rec.abort()}catch(e){}}else startRec();
+  setState(state);
+}
+$('mic').onclick=e=>{e.stopPropagation();toggleMic()};
+$('orb').onclick=()=>{
+  if(!started||speaking||busy)return;
+  if(!micOn){toggleMic();return}
+  if(mediaOn&&!awake){goAwake(false);return}
+  startRec();
+};
+document.addEventListener('keydown',e=>{
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='textarea')return;
+  if(!started){begin();return}
+  if(e.code==='Space'){e.preventDefault();$('orb').click()}
+  if(e.key==='Escape')closeSettings();
+});
+
+/* ---------- सेटिंग ---------- */
+function openSettings(){
+  try{rec&&rec.abort()}catch(e){}
+  $('s_key').value=cfg.key;$('s_model').value=cfg.model;$('s_name').value=cfg.name;$('s_favs').value=cfg.favs;$('s_start').value=cfg.start;
+  $('settings').classList.add('open');
+}
+function closeSettings(){$('settings').classList.remove('open');startRec()}
+$('gear').onclick=e=>{e.stopPropagation();openSettings()};
+$('cancel').onclick=closeSettings;
+$('save').onclick=()=>{
+  store.set('key',$('s_key').value.trim());
+  store.set('model',$('s_model').value.trim()||'gemini-flash-latest');
+  store.set('name',$('s_name').value.trim()||'मम्मी जी');
+  store.set('favs',$('s_favs').value);
+  store.set('start',$('s_start').value.trim());
+  const hadKey=!!cfg.key;
+  cfg=loadCfg();
+  $('settings').classList.remove('open');
+  if(started&&!hadKey&&cfg.key){greet()}else{startRec()}
+};
+
+/* ---------- शुरुआत ---------- */
+function greet(){
+  const h=new Date().getHours();
+  const g=h<12?'सुप्रभात':(h<17?'नमस्ते':'शुभ संध्या');
+  sayQ(`${g} ${cfg.name}। मैं जार्विस हूँ। बताइए, क्या सेवा करूँ?`);
+}
+function begin(){
+  if(started)return;
+  started=true;$('start').style.display='none';
+  initRec();
+  if(!cfg.key){openSettings();return}
+  const sf=findFav(cfg.start);
+  if(sf){showMedia(sf);setState('idle')}else greet();
+}
+$('start').onclick=begin;
+/* Chrome खुलते ही अपने आप शुरू (सेटिंग भरी हो तब) */
+window.addEventListener('load',()=>setTimeout(()=>{if(cfg.key&&cfg.start)begin()},800));
+setState('idle');
+})();
+</script>
+</body>
+</html>
