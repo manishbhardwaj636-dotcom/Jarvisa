@@ -1,461 +1,948 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8">
-<title>Jarvis</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>J.A.R.V.I.S. — Voice Assistant</title>
 <style>
-:root{--c:#2de2ff;--c2:#0a6cff}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:radial-gradient(ellipse at center,#06182b 0%,#02060d 70%);color:#cfefff;font-family:"Segoe UI","Nirmala UI",system-ui,sans-serif;overflow:hidden;user-select:none}
-body.thinking{--c:#ffcc4d}<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="utf-8">
-<title>Jarvis</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-:root{--c:#2de2ff;--c2:#0a6cff}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:radial-gradient(ellipse at center,#06182b 0%,#02060d 70%);color:#cfefff;font-family:"Segoe UI","Nirmala UI",system-ui,sans-serif;overflow:hidden;user-select:none}
-body.thinking{--c:#ffcc4d}
-#top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:20px 30px;z-index:5}
-#clock{font-size:52px;font-weight:200;letter-spacing:3px;color:var(--c);text-shadow:0 0 18px rgba(45,226,255,.5)}
-#date{font-size:18px;opacity:.75;margin-top:2px}
-#btns button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#cfefff;font-size:22px;width:46px;height:46px;border-radius:50%;margin-left:8px;cursor:pointer}
-#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding-bottom:120px}
-#orb{position:relative;width:min(44vh,44vw);height:min(44vh,44vw);cursor:pointer}
-.ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent}
-.r1{border-top-color:var(--c);border-bottom-color:var(--c);animation:spin 6s linear infinite;box-shadow:0 0 25px rgba(45,226,255,.3)}
-.r2{inset:9%;border-left-color:var(--c2);border-right-color:var(--c2);animation:spin 9s linear infinite reverse}
-.r3{inset:18%;border:1px dashed rgba(45,226,255,.5);animation:spin 20s linear infinite}
-.core{position:absolute;inset:28%;border-radius:50%;background:radial-gradient(circle,var(--c) 0%,rgba(10,108,255,.35) 55%,transparent 72%);animation:pulse 3s ease-in-out infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{50%{transform:scale(1.12);opacity:.8}}
-body.listening .core{animation-duration:1.2s}
-body.thinking .r1{animation-duration:1.4s}
-body.speaking .core{animation-duration:.5s}
-#label{margin-top:18px;font-size:22px;color:var(--c);height:30px;letter-spacing:1px}
-#talk{position:fixed;bottom:26px;left:8%;right:8%;text-align:center;z-index:4}
-#you{font-size:18px;opacity:.6;min-height:26px}
-#bot{font-size:34px;color:#fff;text-shadow:0 0 14px rgba(45,226,255,.5);min-height:90px;line-height:1.35}
-#dbg{position:fixed;left:12px;top:92px;font-size:14px;color:#ffb4a2;z-index:6;max-width:60vw;user-select:text}
-#media{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:170px;width:min(560px,60vw);background:rgba(2,10,20,.92);border:1px solid rgba(45,226,255,.4);border-radius:12px
-#top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:20px 30px;z-index:5}
-#clock{font-size:52px;font-weight:200;letter-spacing:3px;color:var(--c);text-shadow:0 0 18px rgba(45,226,255,.5)}
-#date{font-size:18px;opacity:.75;margin-top:2px}
-#btns button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#cfefff;font-size:22px;width:46px;height:46px;border-radius:50%;margin-left:8px;cursor:pointer}
-#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding-bottom:120px}
-#orb{position:relative;width:min(44vh,44vw);height:min(44vh,44vw);cursor:pointer}
-.ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent}
-.r1{border-top-color:var(--c);border-bottom-color:var(--c);animation:spin 6s linear infinite;box-shadow:0 0 25px rgba(45,226,255,.3)}
-.r2{inset:9%;border-left-color:var(--c2);border-right-color:var(--c2);animation:spin 9s linear infinite reverse}
-.r3{inset:18%;border:1px dashed rgba(45,226,255,.5);animation:spin 20s linear infinite}
-.core{position:absolute;inset:28%;border-radius:50%;background:radial-gradient(circle,var(--c) 0%,rgba(10,108,255,.35) 55%,transparent 72%);animation:pulse 3s ease-in-out infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{50%{transform:scale(1.12);opacity:.8}}
-body.listening .core{animation-duration:1.2s}
-body.thinking .r1{animation-duration:1.4s}
-body.speaking .core{animation-duration:.5s}
-#label{margin-top:18px;font-size:22px;color:var(--c);height:30px;letter-spacing:1px}
-#talk{position:fixed;bottom:26px;left:8%;right:8%;text-align:center;z-index:4}
-#you{font-size:18px;opacity:.6;min-height:26px}
-#bot{font-size:34px;color:#fff;text-shadow:0 0 14px rgba(45,226,255,.5);min-height:90px;line-height:1.35}
-#dbg{position:fixed;left:12px;top:92px;font-size:14px;color:#ffb4a2;z-index:6;max-width:60vw;user-select:text}
-#media{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:170px;width:min(560px,60vw);background:rgba(2,10,20,.92);border:1px solid rgba(45,226,255,.4);border-radius:12px;z-index:6;overflow:hidden}
-body.media #media{display:block}
-body.media #orb{width:20vmin;height:20vmin}
-body.media #stage{justify-content:flex-start;padding-top:100px}
-#mbar{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:16px}
-#mtitle{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-#mbar a{color:var(--c);font-size:14px}
-#mstop{background:#c0392b;color:#fff;border:0;border-radius:8px;padding:8px 14px;font-size:16px;cursor:pointer}
-#mbody iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
-#mbody audio{width:100%;display:block}
-#start{position:fixed;inset:0;background:rgba(2,6,13,.96);z-index:20;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;text-align:center}
-#start h1{font-size:46px;font-weight:300;color:var(--c);margin-bottom:14px}
-#start p{font-size:22px;opacity:.8}
-#settings{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:30;align-items:center;justify-content:center;user-select:text}
-#settings.open{display:flex}
-#sbox{background:#0a1724;border:1px solid rgba(45,226,255,.4);border-radius:14px;padding:22px;width:min(560px,92vw);max-height:92vh;overflow:auto}
-#sbox h2{font-weight:400;margin-bottom:12px;color:var(--c)}
-#sbox label{display:block;margin-top:12px;font-size:14px;opacity:.85}
-#sbox input,#sbox textarea{width:100%;margin-top:4px;padding:9px;border-radius:8px;border:1px solid #2c4a63;background:#06101a;color:#fff;font-size:15px;font-family:inherit}
-#sbox textarea{height:110px}
-#sbox small{opacity:.6;font-size:12px}
-#sbox .row{display:flex;gap:10px;margin-top:16px;justify-content:flex-end}
-#sbox button{padding:9px 18px;border-radius:8px;border:0;font-size:15px;cursor:pointer}
-#save{background:var(--c);color:#02101a}
-#cancel{background:#243645;color:#fff}
+  :root {
+    --primary: #2de2ff;
+    --glow: rgba(45, 226, 255, 0.45);
+    --bg: #040812;
+    --panel: rgba(10, 20, 40, 0.78);
+    --border: rgba(45, 226, 255, 0.25);
+    --text: #e6f7ff;
+  }
+
+  body.state-standby { --primary: #2de2ff; --glow: rgba(45, 226, 255, 0.38); }
+  body.state-listening { --primary: #00ffaa; --glow: rgba(0, 255, 170, 0.55); }
+  body.state-thinking { --primary: #ffcc4d; --glow: rgba(255, 204, 77, 0.55); }
+  body.state-speaking { --primary: #9d7bff; --glow: rgba(157, 123, 255, 0.55); }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+
+  body {
+    background: radial-gradient(circle at 50% 42%, #0a1730 0%, var(--bg) 72%);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    overflow-x: hidden;
+    padding: 16px;
+    transition: --primary 0.4s ease;
+  }
+
+  /* Subtle cyber grid background */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(45, 226, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45, 226, 255, 0.04) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Top HUD Bar */
+  .top-bar {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+    padding: 8px 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    backdrop-filter: blur(12px);
+  }
+
+  .hud-clock { font-size: 1.05rem; font-weight: 600; letter-spacing: 1px; color: var(--primary); }
+  .hud-date { font-size: 0.78rem; opacity: 0.75; }
+
+  .icon-btn {
+    background: rgba(45, 226, 255, 0.1);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.15rem;
+    display: grid;
+    place-items: center;
+    transition: 0.25s;
+  }
+  .icon-btn:hover { background: rgba(45, 226, 255, 0.22); transform: scale(1.05); }
+
+  /* Center Arc Reactor HUD */
+  .reactor-stage {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    display: grid;
+    place-items: center;
+    margin: 14px 0;
+    z-index: 2;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: border-color 0.4s, box-shadow 0.4s;
+  }
+
+  .ring-1 {
+    width: 250px; height: 250px;
+    border-top-color: var(--primary);
+    border-bottom-color: var(--primary);
+    opacity: 0.55;
+    animation: spinCW 14s linear infinite;
+  }
+
+  .ring-2 {
+    width: 212px; height: 212px;
+    border-left: 3px dashed var(--primary);
+    border-right: 3px dashed var(--primary);
+    opacity: 0.7;
+    animation: spinCCW 9s linear infinite;
+  }
+
+  .ring-3 {
+    width: 174px; height: 174px;
+    border: 1.5px solid var(--primary);
+    box-shadow: inset 0 0 18px var(--glow), 0 0 18px var(--glow);
+    animation: pulseRing 2.6s ease-in-out infinite;
+  }
+
+  body.state-listening .ring-1 { animation-duration: 4s; }
+  body.state-listening .ring-2 { animation-duration: 3s; }
+  body.state-thinking .ring-1 { animation-duration: 2s; }
+  body.state-speaking .ring-3 { animation-duration: 0.9s; }
+
+  .core {
+    width: 124px;
+    height: 124px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--primary) 0%, rgba(10, 25, 48, 0.92) 72%);
+    box-shadow: 0 0 32px var(--glow), inset 0 0 20px rgba(255,255,255,0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: 0.35s ease;
+    border: 2px solid var(--primary);
+  }
+  .reactor-stage:active .core { transform: scale(0.94); }
+
+  .core-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 0 0 10px var(--primary);
+  }
+
+  /* Equalizer Wave Bars */
+  .visualizer {
+    display: flex;
+    gap: 4px;
+    height: 22px;
+    align-items: center;
+    margin-top: 6px;
+  }
+  .bar {
+    width: 3px;
+    height: 5px;
+    background: #fff;
+    border-radius: 3px;
+    transition: height 0.15s;
+  }
+  body.state-listening .bar,
+  body.state-speaking .bar {
+    animation: eqWave 0.65s ease-in-out infinite alternate;
+  }
+  .bar:nth-child(2) { animation-delay: 0.12s; }
+  .bar:nth-child(3) { animation-delay: 0.24s; }
+  .bar:nth-child(4) { animation-delay: 0.36s; }
+  .bar:nth-child(5) { animation-delay: 0.18s; }
+
+  @keyframes spinCW { to { transform: rotate(360deg); } }
+  @keyframes spinCCW { to { transform: rotate(-360deg); } }
+  @keyframes pulseRing {
+    0%, 100% { transform: scale(0.98); opacity: 0.75; }
+    50% { transform: scale(1.03); opacity: 1; }
+  }
+  @keyframes eqWave {
+    0% { height: 4px; }
+    100% { height: 20px; }
+  }
+
+  /* Status & Transcript Area */
+  .status-pill {
+    z-index: 2;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    background: var(--panel);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    box-shadow: 0 0 14px var(--glow);
+    margin-bottom: 10px;
+  }
+
+  .chat-box {
+    width: 100%;
+    max-width: 680px;
+    z-index: 2;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    backdrop-filter: blur(12px);
+    min-height: 110px;
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .msg-user { align-self: flex-end; background: rgba(45, 226, 255, 0.14); padding: 7px 12px; border-radius: 12px 12px 2px 12px; font-size: 0.92rem; max-width: 85%; }
+  .msg-ai { align-self: flex-start; background: rgba(255, 255, 255, 0.06); border-left: 3px solid var(--primary); padding: 8px 12px; border-radius: 4px 12px 12px 12px; font-size: 0.95rem; line-height: 1.45; max-width: 92%; }
+
+  /* Active Reminders & Timers */
+  .badges-wrap {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    z-index: 2;
+    margin-top: 8px;
+  }
+  .timer-badge {
+    background: rgba(255, 204, 77, 0.14);
+    border: 1px solid rgba(255, 204, 77, 0.45);
+    color: #ffe299;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .timer-badge button {
+    background: none; border: none; color: #ff7b7b; cursor: pointer; font-weight: bold;
+  }
+
+  /* YouTube Mini Player */
+  #yt-container {
+    width: 100%;
+    max-width: 680px;
+    margin-top: 10px;
+    z-index: 2;
+    display: none;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .yt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    background: rgba(0,0,0,0.4);
+  }
+  #yt-frame { width: 100%; height: 210px; border: none; }
+
+  /* Settings Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 16, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    place-items: center;
+    z-index: 20;
+    padding: 16px;
+  }
+  .modal-backdrop.open { display: grid; }
+  .modal {
+    width: 100%;
+    max-width: 500px;
+    max-height: 90dvh;
+    overflow-y: auto;
+    background: #0b1528;
+    border: 1px solid var(--primary);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 0 35px rgba(45, 226, 255, 0.25);
+  }
+  .modal h2 { font-size: 1.15rem; color: var(--primary); margin-bottom: 14px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 0.82rem; margin-bottom: 4px; color: #b8dcff; }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 11px;
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  .field textarea { min-height: 76px; resize: vertical; }
+  .check-row { display: flex; align-items: center; gap: 10px; margin: 12px 0; font-size: 0.88rem; }
+  .check-row input { width: 18px; height: 18px; accent-color: var(--primary); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+  .btn {
+    padding: 9px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-primary { background: var(--primary); color: #03101f; border: none; }
+  .btn-ghost { background: transparent; color: var(--text); }
 </style>
 </head>
-<body>
-<div id="top">
-  <div><div id="clock">--:--</div><div id="date"></div></div>
-  <div id="btns"><button id="mic" title="माइक">🎤</button><button id="gear" title="सेटिंग">⚙</button></div>
-</div>
+<body class="state-standby">
 
-<div id="stage">
-  <div id="orb"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="core"></div></div>
-  <div id="label"></div>
-</div>
+  <div class="top-bar">
+    <div>
+      <div class="hud-clock" id="clock">00:00:00</div>
+      <div class="hud-date" id="dateStr">Loading...</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="icon-btn" id="btnStopAll" title="चुप कराएं / Stop">⏹</button>
+      <button class="icon-btn" id="btnSettings" title="Settings">⚙</button>
+    </div>
+  </div>
 
-<div id="media">
-  <div id="mbar"><span id="mtitle"></span><a id="mopen" target="_blank" rel="noopener">YouTube पर खोलें</a><button id="mstop">⏹ बंद करें</button></div>
-  <div id="mbody"></div>
-</div>
+  <div class="reactor-stage" id="reactorBtn" title="Tap karke seedha bolein">
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="ring ring-3"></div>
+    <div class="core">
+      <div class="core-title">JARVIS</div>
+      <div class="visualizer">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+    </div>
+  </div>
 
-<div id="talk"><div id="you"></div><div id="bot"></div></div>
-<div id="dbg"></div>
+  <div class="status-pill" id="statusPill">STANDBY • "JARVIS" बोलें या टैप करें</div>
 
-<div id="start"><h1>🙏 नमस्ते</h1><p>शुरू करने के लिए स्क्रीन पर कहीं भी छुएँ या कोई भी बटन दबाएँ</p></div>
+  <div class="chat-box" id="chatBox">
+    <div class="msg-ai">नमस्ते! मैं तैयार हूँ। बस <b>"Jarvis"</b> बोलकर अपना आदेश दें या बीच के गोले पर टैप करें।</div>
+  </div>
 
-<div id="settings"><div id="sbox">
-  <h2>सेटिंग (एक बार भरनी है)</h2>
-  <label>Gemini API Key <small>(aistudio.google.com/apikey से मुफ़्त मिलती है)</small>
-    <input id="s_key" type="password" autocomplete="off"></label>
-  <label>Model <small>(जैसा है वैसा रहने दें)</small>
-    <input id="s_model" type="text"></label>
-  <label>कैसे बुलाए <small>(जैसे: मम्मी जी)</small>
-    <input id="s_name" type="text"></label>
-  <label>आरती / भजन की सूची <small>(हर लाइन में: नाम | YouTube लिंक)</small>
-    <textarea id="s_favs" placeholder="सुबह की आरती | https://www.youtube.com/watch?v=XXXXXXXXXXX&#10;हनुमान चालीसा | https://www.youtube.com/watch?v=YYYYYYYYYYY"></textarea></label>
-  <label>शुरू होते ही कौन सी चले <small>(ऊपर की सूची का नाम, ख़ाली छोड़ें तो नहीं चलेगी)</small>
-    <input id="s_start" type="text"></label>
-  <div class="row"><button id="cancel">बंद</button><button id="save">सेव करें</button></div>
-</div></div>
+  <div class="badges-wrap" id="badgesWrap"></div>
+
+  <div id="yt-container">
+    <div class="yt-header">
+      <span id="yt-title">चल रहा है...</span>
+      <button class="icon-btn" style="width:28px;height:28px;font-size:0.85rem;" onclick="closePlayer()">✕</button>
+    </div>
+    <iframe id="yt-frame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal">
+      <h2>⚙ J.A.R.V.I.S. सेटिंग्स</h2>
+
+      <div class="check-row">
+        <input type="checkbox" id="s_handsfree" checked />
+        <label for="s_handsfree">Hands-Free Mode ("Jarvis" wake-word के साथ लगातार सुनना)</label>
+      </div>
+
+      <div class="field">
+        <label>Gemini API Key (ज़रूरी)</label>
+        <input type="password" id="s_key" placeholder="AIzaSy..." />
+      </div>
+
+      <div class="field">
+        <label>YouTube Data API v3 Key (किसी भी आरती को सीधे चलाने के लिए)</label>
+        <input type="password" id="s_ytkey" placeholder="AIzaSy... (YouTube Data API v3)" />
+      </div>
+
+      <div class="field">
+        <label>Gemini Model</label>
+        <input type="text" id="s_model" value="gemini-2.5-flash" />
+      </div>
+
+      <div class="field">
+        <label>आपको कैसे बुलाऊँ?</label>
+        <input type="text" id="s_name" value="मम्मी जी" />
+      </div>
+
+      <div class="field">
+        <label>WhatsApp Contacts (हर लाइन में: नाम | 91XXXXXXXXXX)</label>
+        <textarea id="s_contacts" placeholder="Manish | 9198XXXXXXXX&#10;Didi | 9197XXXXXXXX"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Saved Aarti / Bhajan List (हर लाइन में: नाम | YouTube Video ID या URL)</label>
+        <textarea id="s_favs" placeholder="हनुमान चालीसा | AETFvQonfV8&#10;गायत्री मंत्र | Sarl_5g5xP8"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Auto-Start Aarti (पेज खुलते ही चलाने के लिए नाम लिखें, वरना खाली छोड़ें)</label>
+        <input type="text" id="s_start" placeholder="उदाहरण: हनुमान चालीसा" />
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="btnCloseSettings">बंद करें</button>
+        <button class="btn btn-primary" id="btnSaveSettings">सेव करें</button>
+      </div>
+    </div>
+  </div>
 
 <script>
-(function(){
-const $=id=>document.getElementById(id);
-const store={
-  get(k,d){try{const v=localStorage.getItem('jv_'+k);return v===null?d:v}catch(e){return d}},
-  set(k,v){try{localStorage.setItem('jv_'+k,v)}catch(e){}}
+const STORAGE_KEY = 'jarvis_config_v3';
+let cfg = {
+  handsfree: true,
+  key: '',
+  ytKey: '',
+  model: 'gemini-2.5-flash',
+  userName: 'मम्मी जी',
+  contacts: '',
+  favs: 'हनुमान चालीसा | AETFvQonfV8\nगायत्री मंत्र | Sarl_5g5xP8',
+  autoStart: ''
 };
-function loadCfg(){return{key:store.get('key',''),model:store.get('model','gemini-flash-latest'),name:store.get('name','मम्मी जी'),favs:store.get('favs',''),start:store.get('start','')}}
-let cfg=loadCfg();
 
-let started=false,state='idle',busy=false,speaking=false,listening=false,micOn=true,mediaOn=false,awake=false,wakeTimer=null,pending=null,rec=null,voices=[];
-const WAKE=/jarvis|jarwis|जार्विस|जारविस|जार्वीस|जर्विस|जाविस|ज़ार्विस|जार्विज/i;
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const hist=[];
+let isAwake = false;        // True for 12s after saying "Jarvis" or tapping reactor
+let awakeTimer = null;
+let isSpeaking = false;
+let isProcessing = false;
+let recognition = null;
+let restartTimeout = null;
+let activeTimers = [];
 
-/* ---------- घड़ी ---------- */
-function tick(){
-  const d=new Date();
-  $('clock').textContent=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
-  $('date').textContent=d.toLocaleDateString('hi-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+// Load & Save Config
+function loadCfg() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved) cfg = { ...cfg, ...saved };
+  } catch (e) {}
+  document.getElementById('s_handsfree').checked = cfg.handsfree !== false;
+  document.getElementById('s_key').value = cfg.key || '';
+  document.getElementById('s_ytkey').value = cfg.ytKey || '';
+  document.getElementById('s_model').value = cfg.model || 'gemini-2.5-flash';
+  document.getElementById('s_name').value = cfg.userName || 'मम्मी जी';
+  document.getElementById('s_contacts').value = cfg.contacts || '';
+  document.getElementById('s_favs').value = cfg.favs || '';
+  document.getElementById('s_start').value = cfg.autoStart || '';
 }
-tick();setInterval(tick,1000);
 
-/* ---------- स्थिति ---------- */
-function setState(s){
-  state=s;
-  ['listening','thinking','speaking'].forEach(c=>document.body.classList.toggle(c,c===s));
-  const m={listening:'बोलिए…',thinking:'एक पल…',speaking:''};
-  let t=m[s];
-  if(t===undefined){t=!micOn?'माइक बंद है':(mediaOn?'"जार्विस" बोलकर बुलाइए':'')}
-  $('label').textContent=t;
+function saveCfg() {
+  cfg.handsfree = document.getElementById('s_handsfree').checked;
+  cfg.key = document.getElementById('s_key').value.trim();
+  cfg.ytKey = document.getElementById('s_ytkey').value.trim();
+  cfg.model = document.getElementById('s_model').value.trim() || 'gemini-2.5-flash';
+  cfg.userName = document.getElementById('s_name').value.trim() || 'मम्मी जी';
+  cfg.contacts = document.getElementById('s_contacts').value.trim();
+  cfg.favs = document.getElementById('s_favs').value.trim();
+  cfg.autoStart = document.getElementById('s_start').value.trim();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+  document.getElementById('settingsModal').classList.remove('open');
+  addMsg('ai', 'सेटिंग्स सेव हो गई हैं।');
+  if (cfg.handsfree) startListening(false);
 }
 
-/* ---------- आवाज़ (TTS) ---------- */
-function loadVoices(){voices=window.speechSynthesis?speechSynthesis.getVoices():[]}
-if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-function pickVoice(){
-  const hi=voices.filter(v=>v.lang&&v.lang.toLowerCase().startsWith('hi'));
-  return hi.find(v=>/google/i.test(v.name))||hi[0]||voices.find(v=>/en-in/i.test(v.lang))||null;
+// Clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  document.getElementById('dateStr').textContent = now.toLocaleDateString('hi-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
-function say(text){
-  return new Promise(res=>{
-    let shown=false;
-    const show=()=>{if(!shown){shown=true;$('bot').textContent=text}};
-    speaking=true;setState('speaking');
-    try{rec&&rec.abort()}catch(e){}
-    let done=false;
-    const fin=()=>{if(done)return;done=true;show();speaking=false;if(!busy)setState('idle');res();startRec()};
-    if(!window.speechSynthesis){show();setTimeout(fin,2500);return}
-    setTimeout(show,3000);
-    const u=new SpeechSynthesisUtterance(String(text).replace(/[*_#`]/g,''));
-    const v=pickVoice();
-    if(v){u.voice=v;u.lang=v.lang}else{u.lang='hi-IN'}
-    u.rate=0.95;
-    u.onstart=show;u.onend=fin;u.onerror=fin;
-    speechSynthesis.speak(u);
-    setTimeout(fin,Math.max(5000,String(text).length*180));
-  });
-}
-let q=Promise.resolve();
-const sayQ=t=>(q=q.then(()=>say(t)));
+setInterval(updateClock, 1000);
+updateClock();
 
-/* ---------- सुनना (STT) ---------- */
-function initRec(){
-  if(!SR){$('bot').textContent='यह ब्राउज़र आवाज़ नहीं समझता। Google Chrome में खोलिए।';return}
-  rec=new SR();
-  rec.lang='hi-IN';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
-  rec.onstart=()=>{listening=true;setState('listening')};
-  rec.onend=()=>{
-    listening=false;
-    if(state==='listening')setState('idle');
-    setTimeout(startRec,400);
+// UI State & Chat Helpers
+function setState(state, customText) {
+  document.body.className = `state-${state}`;
+  const pill = document.getElementById('statusPill');
+  if (customText) {
+    pill.textContent = customText;
+    return;
+  }
+  if (state === 'listening') {
+    pill.textContent = isAwake ? 'सुन रहा हूँ... बोलिए' : 'STANDBY • "JARVIS" बोलें';
+  } else if (state === 'thinking') {
+    pill.textContent = 'सोच रहा हूँ...';
+  } else if (state === 'speaking') {
+    pill.textContent = 'बोल रहा हूँ...';
+  } else {
+    pill.textContent = cfg.handsfree ? 'STANDBY • "JARVIS" बोलें' : 'बोलने के लिए गोले पर टैप करें';
+  }
+}
+
+function addMsg(role, text) {
+  const box = document.getElementById('chatBox');
+  const div = document.createElement('div');
+  div.className = role === 'user' ? 'msg-user' : 'msg-ai';
+  div.textContent = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+// Text-to-Speech
+function speak(text, onDone) {
+  window.speechSynthesis.cancel();
+  if (!text) { if (onDone) onDone(); return; }
+  isSpeaking = true;
+  setState('speaking');
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'hi-IN';
+  utter.rate = 1.02;
+  utter.onend = () => {
+    isSpeaking = false;
+    setState('standby');
+    if (onDone) onDone();
+    else if (cfg.handsfree) scheduleRestart(400);
   };
-  rec.onerror=e=>{
-    if(e.error==='not-allowed'||e.error==='service-not-allowed'){
-      micOn=false;$('mic').textContent='🔇';
-      $('bot').textContent='माइक की अनुमति दीजिए (Chrome में ऊपर Allow दबाइए), फिर 🎤 छुएँ।';
+  utter.onerror = () => {
+    isSpeaking = false;
+    setState('standby');
+    if (onDone) onDone();
+    else if (cfg.handsfree) scheduleRestart(400);
+  };
+  window.speechSynthesis.speak(utter);
+}
+
+// Wake-word Window Manager
+function activateAwakeWindow() {
+  isAwake = true;
+  setState('listening', 'सुन रहा हूँ... बोलिए');
+  clearTimeout(awakeTimer);
+  awakeTimer = setTimeout(() => {
+    isAwake = false;
+    if (!isProcessing && !isSpeaking) {
+      setState(cfg.handsfree ? 'listening' : 'standby');
     }
-    $('dbg').textContent='mic: '+e.error;
+  }, 12000);
+}
+
+// Wake-word Extractor
+function extractWakeCommand(rawText) {
+  const text = rawText.trim();
+  // Matches "Jarvis", "Hey Jarvis", "जार्विस", "हे जार्विस", "जाविश", etc.
+  const wakeRegex = /^(?:hey\s+|हे\s+|ओके\s+|ok\s+)?(?:jarvis|जार्विस|जारविस|जाविश|जर्विस)[\s,।!?-]*(.*)$/i;
+  const match = text.match(wakeRegex);
+  if (match) {
+    return { triggered: true, command: (match[1] || '').trim() };
+  }
+  return { triggered: false, command: text };
+}
+
+// Speech Recognition Setup
+function initRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    setState('standby', 'इस ब्राउज़र में Voice Recognition उपलब्ध नहीं है');
+    return;
+  }
+  recognition = new SR();
+  recognition.lang = 'hi-IN';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    if (!isProcessing && !isSpeaking) {
+      setState('listening');
+    }
   };
-  rec.onresult=e=>{
-    let t='',fin=false;
-    for(let i=e.resultIndex;i<e.results.length;i++){t+=e.results[i][0].transcript;if(e.results[i].isFinal)fin=true}
-    $('you').textContent=t;
-    if(mediaOn&&!awake){
-      /* आरती चलते समय सिर्फ़ "जार्विस" सुनना है */
-      if(fin&&WAKE.test(t)){
-        const rest=t.replace(WAKE,'').replace(/^[\s,।.]+/,'').trim();
-        if(rest.length>2){goAwake(true);handle(rest)}else goAwake(false);
+
+  recognition.onresult = async (event) => {
+    const transcript = event.results[event.results.length - 1][0].transcript.trim();
+    if (!transcript || isSpeaking) return;
+
+    if (!cfg.handsfree || isAwake) {
+      // Direct command mode
+      clearTimeout(awakeTimer);
+      isAwake = false;
+      const cleaned = extractWakeCommand(transcript);
+      const finalCmd = cleaned.triggered && cleaned.command ? cleaned.command : transcript;
+      await handleUserCommand(finalCmd);
+    } else {
+      // Standby wake-word mode
+      const { triggered, command } = extractWakeCommand(transcript);
+      if (triggered) {
+        if (command) {
+          await handleUserCommand(command);
+        } else {
+          activateAwakeWindow();
+          speak('जी, बोलिए...', () => {
+            activateAwakeWindow();
+            scheduleRestart(250);
+          });
+        }
       }
+    }
+  };
+
+  recognition.onerror = (e) => {
+    if (e.error === 'not-allowed') {
+      cfg.handsfree = false;
+      setState('standby', 'माइक की अनुमति (Mic Permission) दें');
       return;
     }
-    if(fin)handle(t.trim());
+    if (cfg.handsfree && !isProcessing && !isSpeaking) {
+      scheduleRestart(600);
+    }
+  };
+
+  recognition.onend = () => {
+    if (cfg.handsfree && !isProcessing && !isSpeaking) {
+      scheduleRestart(400);
+    } else if (!cfg.handsfree && !isProcessing && !isSpeaking) {
+      setState('standby');
+    }
   };
 }
-function startRec(){
-  if(!started||!rec||!micOn||busy||speaking||listening||$('settings').classList.contains('open'))return;
-  try{rec.start()}catch(e){}
-}
-function goAwake(quiet){
-  if(awake)return;
-  awake=true;pauseMedia();
-  clearTimeout(wakeTimer);
-  wakeTimer=setTimeout(()=>{if(awake&&!busy){awake=false;resumeMedia()}},12000);
-  if(!quiet){try{rec&&rec.abort()}catch(e){}sayQ('जी, बोलिए।')}
+
+function scheduleRestart(delay = 400) {
+  clearTimeout(restartTimeout);
+  restartTimeout = setTimeout(() => {
+    startListening(false);
+  }, delay);
 }
 
-/* ---------- Gemini ---------- */
-const TOOLS=[
- {name:'play_media',description:'आरती, भजन या गाना सूची में से चलाओ',parameters:{type:'OBJECT',properties:{name:{type:'STRING',description:'सूची में से नाम'}},required:['name']}},
- {name:'stop_media',description:'चल रही आरती/भजन/वीडियो बंद करो'},
- {name:'set_timer',description:'टाइमर लगाओ',parameters:{type:'OBJECT',properties:{minutes:{type:'NUMBER',description:'मिनट'},label:{type:'STRING',description:'किसलिए'}},required:['minutes']}}
-];
-function parseFavs(){
-  return cfg.favs.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
-    const i=l.indexOf('|');return i<0?null:{name:l.slice(0,i).trim(),url:l.slice(i+1).trim()};
-  }).filter(f=>f&&f.name&&f.url);
-}
-function findFav(n){
-  const list=parseFavs();n=(n||'').toLowerCase().trim();
-  if(!n&&list.length===1)return list[0];
-  return list.find(x=>x.name.toLowerCase()===n)||list.find(x=>n&&(x.name.toLowerCase().includes(n)||n.includes(x.name.toLowerCase())))||null;
-}
-function sysPrompt(){
-  const names=parseFavs().map(f=>f.name).join(', ')||'(सूची खाली है)';
-  const now=new Date().toLocaleString('hi-IN',{dateStyle:'full',timeStyle:'short'});
-  return `तुम "जार्विस" हो, ${cfg.name} के घर का आवाज़ वाला सहायक। नियम: `+
-  `1) जवाब बहुत छोटा रखो, ज़्यादातर एक छोटा वाक्य, ज़्यादा से ज़्यादा दो। `+
-  `2) हिंदी में देवनागरी लिपि में बोलो ताकि आवाज़ सही पढ़े। `+
-  `3) आदर से "आप" कहकर बात करो, ${cfg.name} कहकर बुला सकते हो पर हर बार नहीं। `+
-  `4) अपने बारे में बोलते समय लिंग-निरपेक्ष शब्द रखो, यानी "रहा" या "रही" से बचो। `+
-  `5) कोई सूची, तारांकन, इमोजी या मार्कडाउन मत लिखो। `+
-  `6) सेहत या दवा के सवाल पर सावधान रहो और डॉक्टर से पूछने को कहो। `+
-  `7) आरती, भजन या गाना चलाने को कहें तो play_media टूल से सूची में से चलाओ, रोकने को कहें तो stop_media, टाइमर के लिए set_timer। उपलब्ध सूची: ${names}। `+
-  `8) अभी की तारीख और समय: ${now}।`;
-}
-async function callGemini(contents){
-  const body={system_instruction:{parts:[{text:sysPrompt()}]},contents,tools:[{function_declarations:TOOLS}],generationConfig:{temperature:0.7,maxOutputTokens:1024}};
-  const tryList=[cfg.model,'gemini-3.5-flash-lite','gemini-3.1-flash-lite','gemini-3.8-flash','gemini-3.6-flash','gemini-flash-latest','gemini-2.5-flash-lite','gemini-2.5-flash'].filter((m,i,a)=>m&&a.indexOf(m)===i);
-  let lastErr=null;
-  for(let round=0;round<2;round++){
-   if(round>0)await new Promise(r=>setTimeout(r,2000));
-   for(const model of tryList){
-    let r;
-    try{
-      r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{
-        method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':cfg.key},body:JSON.stringify(body)
-      });
-    }catch(e){throw new Error('NETWORK '+(e&&e.message||e))}
-    if(r.ok){
-      if(model!==cfg.model){cfg.model=model;store.set('model',model)}
-      return r.json();
-    }
-    const t=await r.text();
-    lastErr=new Error('HTTP '+r.status+' ['+model+'] '+t.slice(0,220));
-    const retryable=[404,429,500,502,503,504].includes(r.status)||(r.status===400&&/model/i.test(t)&&/not found|not supported/i.test(t));
-    if(!retryable)throw lastErr;
-   }
+function startListening(forceAwake = false) {
+  if (!recognition) initRecognition();
+  if (!recognition || isProcessing || isSpeaking) return;
+  if (forceAwake) activateAwakeWindow();
+  try {
+    recognition.start();
+  } catch (e) {
+    // Already started
   }
-  throw lastErr;
-}
-function runTool(n,a){
-  if(n==='play_media'){
-    const f=findFav(a.name);
-    if(!f)return{ok:false,error:'सूची में नहीं मिला',available:parseFavs().map(x=>x.name)};
-    pending=f;return{ok:true,playing:f.name};
-  }
-  if(n==='stop_media'){stopMedia(true);pending=null;return{ok:true}}
-  if(n==='set_timer'){
-    const m=Number(a.minutes);if(!(m>0))return{ok:false};
-    const lab=a.label||'टाइमर';
-    setTimeout(()=>{sayQ(`${cfg.name}, ${lab} का समय पूरा हो गया।`)},m*60000);
-    return{ok:true,minutes:m};
-  }
-  return{ok:false,error:'unknown tool'};
-}
-async function ask(text){
-  hist.push({role:'user',parts:[{text}]});
-  let contents=hist.slice(-12);
-  while(contents.length&&contents[0].role!=='user')contents.shift();
-  for(let i=0;i<3;i++){
-    const data=await callGemini(contents);
-    const cand=data.candidates&&data.candidates[0];
-    const parts=(cand&&cand.content&&cand.content.parts)||[];
-    const calls=parts.filter(p=>p.functionCall);
-    if(!calls.length){
-      const t=parts.map(p=>p.text||'').join('').trim()||'जी, फिर से बोलिए।';
-      hist.push({role:'model',parts:[{text:t}]});
-      return t;
-    }
-    contents=contents.concat([{role:'model',parts}]);
-    const resp=calls.map(p=>({functionResponse:{name:p.functionCall.name,response:runTool(p.functionCall.name,p.functionCall.args||{})}}));
-    contents=contents.concat([{role:'user',parts:resp}]);
-  }
-  return 'ठीक है।';
-}
-function errText(e){
-  const m=String(e&&e.message||e);
-  if(!navigator.onLine)return 'इंटरनेट नहीं चल रहा है।';
-  if(/HTTP (429|500|502|503|504)/.test(m))return 'Gemini अभी बहुत व्यस्त है, थोड़ी देर बाद फिर पूछिए।';
-  if(/HTTP 40[013]/.test(m))return 'Gemini की चाबी में दिक्कत है। सेटिंग देखनी होगी।';
-  $('bot').textContent='';
-  return 'कुछ गड़बड़ हो गई, फिर से बोलिए।';
-}
-async function handle(text){
-  if(!text||busy)return;
-  busy=true;setState('thinking');
-  try{
-    const reply=await ask(text);
-    await sayQ(reply);
-    if(pending){const f=pending;pending=null;showMedia(f)}
-  }catch(e){
-    if(hist.length&&hist[hist.length-1].role==='user')hist.pop();
-    $('dbg').textContent='⚠ '+String(e.message||e).slice(0,300);
-    console.error(e);
-    await sayQ(errText(e));
-  }
-  busy=false;setState('idle');
-  awake=false;clearTimeout(wakeTimer);
-  if(mediaOn)resumeMedia();
-  startRec();
 }
 
-/* ---------- आरती / मीडिया ---------- */
-function ytEmbed(u){
-  try{
-    const x=new URL(u.trim());let v=x.searchParams.get('v'),l=x.searchParams.get('list');
-    if(x.hostname.includes('youtu.be'))v=x.pathname.slice(1);
-    if(!v&&x.pathname.startsWith('/shorts/'))v=x.pathname.split('/')[2];
-    if(v)return 'https://www.youtube.com/embed/'+v+'?autoplay=1&rel=0&enablejsapi=1'+(l?'&list='+l:'');
-    if(l)return 'https://www.youtube.com/embed/videoseries?list='+l+'&autoplay=1&rel=0&enablejsapi=1';
-  }catch(e){}
+// Tool Implementations
+function extractVideoId(str) {
+  const m = str.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+  if (m) return m[1];
+  if (/^[A-Za-z0-9_-]{11}$/.test(str.trim())) return str.trim();
   return null;
 }
-function showMedia(f){
-  stopMedia(true);
-  mediaOn=true;document.body.classList.add('media');
-  $('mtitle').textContent=f.name;
-  const body=$('mbody');body.innerHTML='';
-  if(/^https?:/i.test(f.url)){
-    $('mopen').href=f.url;$('mopen').style.display='';
-    const e=ytEmbed(f.url);
-    if(e){const ifr=document.createElement('iframe');ifr.src=e;ifr.allow='autoplay; encrypted-media';ifr.allowFullscreen=true;ifr.referrerPolicy='strict-origin-when-cross-origin';body.appendChild(ifr)}
-    else body.textContent='यह लिंक नहीं चल सकता';
-    if(location.protocol==='file:')$('dbg').textContent='YouTube वीडियो file:// से नहीं चलता, पेज को https पर रखिए (GitHub Pages)।';
-  }else{
-    $('mopen').style.display='none';
-    const a=document.createElement('audio');
-    a.controls=true;a.autoplay=true;a.src=encodeURI(f.url);
-    a.onended=()=>stopMedia();
-    a.onerror=()=>{stopMedia();sayQ('यह फ़ाइल नहीं मिली।')};
-    body.appendChild(a);
-  }
-  setState(state);
-}
-function mediaCmd(c){
-  if(!mediaOn)return;
-  const el=$('mbody').firstChild;if(!el)return;
-  if(el.tagName==='AUDIO'){if(c==='pauseVideo')el.pause();else el.play().catch(()=>{});return}
-  try{el.contentWindow.postMessage(JSON.stringify({event:'command',func:c,args:''}),'*')}catch(e){}
-}
-function pauseMedia(){mediaCmd('pauseVideo')}
-function resumeMedia(){mediaCmd('playVideo')}
-function stopMedia(silent){
-  mediaOn=false;awake=false;
-  $('mbody').innerHTML='';document.body.classList.remove('media');
-  if(!silent){setState('idle');startRec()}
-}
-$('mstop').onclick=()=>stopMedia();
 
-/* ---------- बटन और कीबोर्ड ---------- */
-function toggleMic(){
-  micOn=!micOn;$('mic').textContent=micOn?'🎤':'🔇';
-  if(!micOn){try{rec&&rec.abort()}catch(e){}}else startRec();
-  setState(state);
+function playVideoEmbed(videoId, title) {
+  const container = document.getElementById('yt-container');
+  const frame = document.getElementById('yt-frame');
+  document.getElementById('yt-title').textContent = `▶ ${title}`;
+  frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  container.style.display = 'block';
 }
-$('mic').onclick=e=>{e.stopPropagation();toggleMic()};
-$('orb').onclick=()=>{
-  if(!started||speaking||busy)return;
-  if(!micOn){toggleMic();return}
-  if(mediaOn&&!awake){goAwake(false);return}
-  startRec();
-};
-document.addEventListener('keydown',e=>{
-  const tag=(e.target.tagName||'').toLowerCase();
-  if(tag==='input'||tag==='textarea')return;
-  if(!started){begin();return}
-  if(e.code==='Space'){e.preventDefault();$('orb').click()}
-  if(e.key==='Escape')closeSettings();
+
+function closePlayer() {
+  document.getElementById('yt-frame').src = '';
+  document.getElementById('yt-container').style.display = 'none';
+}
+
+async function toolPlayMedia(query) {
+  const qLower = query.toLowerCase();
+  const lines = (cfg.favs || '').split('\n').map(l => l.trim()).filter(Boolean);
+  for (const line of lines) {
+    const [name, link] = line.split('|').map(s => s.trim());
+    if (name && link && (qLower.includes(name.toLowerCase()) || name.toLowerCase().includes(qLower))) {
+      const vid = extractVideoId(link);
+      if (vid) {
+        playVideoEmbed(vid, name);
+        return `${name} चला रहा हूँ।`;
+      }
+    }
+  }
+
+  if (cfg.ytKey) {
+    try {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=${encodeURIComponent(query)}&key=${encodeURIComponent(cfg.ytKey)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const item = data.items && data.items[0];
+      if (item && item.id && item.id.videoId) {
+        playVideoEmbed(item.id.videoId, item.snippet.title || query);
+        return `YouTube पर ${query} चला दिया है।`;
+      }
+    } catch (e) {}
+  }
+
+  window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
+  return `YouTube पर ${query} खोज दिया है।`;
+}
+
+function toolOpenWebsite(site) {
+  const s = site.toLowerCase().trim();
+  const map = {
+    gmail: 'https://mail.google.com',
+    mail: 'https://mail.google.com',
+    maps: 'https://maps.google.com',
+    whatsapp: 'https://web.whatsapp.com',
+    youtube: 'https://www.youtube.com',
+    google: 'https://www.google.com'
+  };
+  let target = map[s];
+  if (!target) {
+    target = s.startsWith('http') ? s : `https://${s.includes('.') ? s : s + '.com'}`;
+  }
+  window.open(target, '_blank');
+  return `${site} खोल दिया है।`;
+}
+
+function toolSendWhatsApp(recipient, message) {
+  const lines = (cfg.contacts || '').split('\n').map(l => l.trim()).filter(Boolean);
+  let phone = recipient.replace(/\D/g, '');
+  let matchedName = recipient;
+
+  if (phone.length < 10) {
+    phone = '';
+    for (const line of lines) {
+      const [name, num] = line.split('|').map(s => s.trim());
+      if (name && num && name.toLowerCase().includes(recipient.toLowerCase())) {
+        phone = num.replace(/\D/g, '');
+        matchedName = name;
+        break;
+      }
+    }
+  }
+
+  if (!phone) {
+    return `${recipient} का नंबर कॉन्टैक्ट्स में नहीं मिला। कृपया सेटिंग्स में नंबर जोड़ें।`;
+  }
+  if (phone.length === 10) phone = '91' + phone;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+  return `${matchedName} के लिए WhatsApp मैसेज तैयार कर दिया है, बस Send दबा दें।`;
+}
+
+function addTimerBadge(label, timeoutId) {
+  const id = Date.now() + Math.random();
+  activeTimers.push({ id, label, timeoutId });
+  renderBadges();
+  return id;
+}
+
+function removeTimerBadge(id) {
+  const idx = activeTimers.findIndex(t => t.id === id);
+  if (idx !== -1) {
+    clearTimeout(activeTimers[idx].timeoutId);
+    activeTimers.splice(idx, 1);
+    renderBadges();
+  }
+}
+
+function renderBadges() {
+  const wrap = document.getElementById('badgesWrap');
+  wrap.innerHTML = '';
+  activeTimers.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'timer-badge';
+    el.innerHTML = `⏰ ${t.label} <button onclick="removeTimerBadge(${t.id})">✕</button>`;
+    wrap.appendChild(el);
+  });
+}
+
+function toolSetTimer(minutes, label = 'टाइमर') {
+  const ms = Math.max(1, Number(minutes)) * 60000;
+  let badgeId;
+  const tid = setTimeout(() => {
+    removeTimerBadge(badgeId);
+    const alertMsg = `${cfg.userName}, आपका ${minutes} मिनट का ${label} पूरा हो गया है!`;
+    addMsg('ai', alertMsg);
+    speak(alertMsg);
+  }, ms);
+  badgeId = addTimerBadge(`${minutes} मिनट (${label})`, tid);
+  return `${minutes} मिनट का ${label} लगा दिया है।`;
+}
+
+function toolSetReminder(time24, message) {
+  const [hh, mm] = time24.split(':').map(Number);
+  if (isNaN(hh) || isNaN(mm)) return 'समय समझ नहीं आया, कृपया दोबारा बोलें।';
+  const now = new Date();
+  const target = new Date();
+  target.setHours(hh, mm, 0, 0);
+  if (target <= now) target.setDate(target.getDate() + 1);
+  const diff = target - now;
+  let badgeId;
+  const tid = setTimeout(() => {
+    removeTimerBadge(badgeId);
+    const alertMsg = `${cfg.userName}, याद दिलाने का समय हो गया है: ${message}`;
+    addMsg('ai', alertMsg);
+    speak(alertMsg);
+  }, diff);
+  badgeId = addTimerBadge(`${time24} - ${message}`, tid);
+  return `${time24} बजे के लिए "${message}" का रिमाइंडर लगा दिया है।`;
+}
+
+// Gemini Brain (Function Calling + Live Search Fallback)
+async function handleUserCommand(userText) {
+  addMsg('user', userText);
+  if (!cfg.key) {
+    const err = 'कृपया पहले ऊपर दाईं ओर ⚙ सेटिंग्स में जाकर अपनी Gemini API Key डालें।';
+    addMsg('ai', err);
+    speak(err);
+    return;
+  }
+
+  isProcessing = true;
+  setState('thinking');
+
+  const sysPrompt = `आप J.A.R.V.I.S. हैं। उपयोगकर्ता को "${cfg.userName}" कहकर सम्मान से संबोधित करें। हमेशा सरल, स्पष्ट हिंदी (देवनागरी) में संक्षिप्त (1-3 वाक्य) जवाब दें। वर्तमान समय: ${new Date().toLocaleString('hi-IN')}। यदि उपयोगकर्ता आरती/भजन/गाना चलाने को कहे तो play_media चलाएं। वेबसाइट खोलने के लिए open_website चलाएं। WhatsApp मैसेज के लिए send_whatsapp चलाएं। टाइमर के लिए set_timer और किसी निश्चित समय के रिमाइंडर के लिए set_reminder (24-घंटे HH:MM फॉर्मेट) चलाएं।`;
+
+  const functionTools = [{
+    function_declarations: [
+      {
+        name: 'play_media',
+        description: 'Play an aarti, bhajan, mantra, or song on YouTube',
+        parameters: { type: 'OBJECT', properties: { query: { type: 'STRING' } }, required: ['query'] }
+      },
+      {
+        name: 'open_website',
+        description: 'Open a website like Gmail, Maps, WhatsApp, YouTube or any URL',
+        parameters: { type: 'OBJECT', properties: { site: { type: 'STRING' } }, required: ['site'] }
+      },
+      {
+        name: 'send_whatsapp',
+        description: 'Prepare a WhatsApp message to a contact name or phone number',
+        parameters: {
+          type: 'OBJECT',
+          properties: {
+            recipient: { type: 'STRING' },
+            message: { type: 'STRING' }
+          },
+          required: ['recipient', 'message']
+        }
+      },
+      {
+        name: 'set_timer',
+        description: 'Set a countdown timer in minutes',
+        parameters: {
+          type: 'OBJECT',
+          properties: {
+            minutes: { type: 'NUMBER' },
+            label: { type: 'STRING' }
+          },
+          required: ['minutes']
+        }
+      },
+      {
+        name: 'set_reminder',
+        description: 'Set a reminder at a specific 24-hour time HH:MM',
+        parameters: {
+          type: 'OBJECT',
+          properties: {
+            time24: { type: 'STRING', description: '24-hour format HH:MM e.g. 08:00 or 17:30' },
+            message: { type: 'STRING' }
+          },
+          required: ['time24', 'message']
+        }
+      }
+    ]
+  }];
+
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cfg.model)}:generateContent?key=${encodeURIComponent(cfg.key)}`;
+
+  try {
+    // 1. Check action tools first
+    let res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: sysPrompt }] },
+        contents: [{ role: 'user', parts: [{ text: userText }] }],
+        tools: functionTools
+      })
+    });
+    let data = await res.json();
+    const parts = data?.candidates?.[0]?.content?.parts || [];
+    const fnCall = parts.find(p => p.functionCall)?.functionCall;
+
+    let replyText = '';
+
+    if (fnCall) {
+      const args = fnCall.args || {};
+      if (fnCall.name === 'play_media') replyText = await toolPlayMedia(args.query);
+      else if (fnCall.name === 'open_website') replyText = toolOpenWebsite(args.site);
+      else if (fnCall.name === 'send_whatsapp') replyText = toolSendWhatsApp(args.recipient, args.message);
+      else if (fnCall.name === 'set_timer') replyText = toolSetTimer(args.minutes, args.label || 'टाइमर');
+      else if (fnCall.name === 'set_reminder') replyText = toolSetReminder(args.time24, args.message);
+    } else {
+      // 2. General / Live Google Search query
+      const searchRes = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: sysPrompt }] },
+          contents: [{ role: 'user', parts: [{ text: userText }] }],
+          tools: [{ google_search: {} }]
+        })
+      });
+      const searchData = await searchRes.json();
+      replyText = searchData?.candidates?.[0]?.content?.parts?.map(p => p.text).join(' ').trim()
+        || parts.map(p => p.text).join(' ').trim()
+        || 'माफ़ कीजिए, मैं अभी इसका उत्तर नहीं ला पाया।';
+    }
+
+    isProcessing = false;
+    addMsg('ai', replyText);
+    speak(replyText);
+  } catch (err) {
+    isProcessing = false;
+    const msg = 'नेटवर्क या API कुंजी में कोई समस्या आ रही है।';
+    addMsg('ai', msg);
+    speak(msg);
+  }
+}
+
+// Event Listeners
+document.getElementById('reactorBtn').addEventListener('click', () => {
+  window.speechSynthesis.cancel();
+  isSpeaking = false;
+  startListening(true);
 });
 
-/* ---------- सेटिंग ---------- */
-function openSettings(){
-  try{rec&&rec.abort()}catch(e){}
-  $('s_key').value=cfg.key;$('s_model').value=cfg.model;$('s_name').value=cfg.name;$('s_favs').value=cfg.favs;$('s_start').value=cfg.start;
-  $('settings').classList.add('open');
-}
-function closeSettings(){$('settings').classList.remove('open');startRec()}
-$('gear').onclick=e=>{e.stopPropagation();openSettings()};
-$('cancel').onclick=closeSettings;
-$('save').onclick=()=>{
-  store.set('key',$('s_key').value.trim());
-  store.set('model',$('s_model').value.trim()||'gemini-flash-latest');
-  store.set('name',$('s_name').value.trim()||'मम्मी जी');
-  store.set('favs',$('s_favs').value);
-  store.set('start',$('s_start').value.trim());
-  const hadKey=!!cfg.key;
-  cfg=loadCfg();
-  $('settings').classList.remove('open');
-  if(started&&!hadKey&&cfg.key){greet()}else{startRec()}
-};
+document.getElementById('btnStopAll').addEventListener('click', () => {
+  window.speechSynthesis.cancel();
+  isSpeaking = false;
+  isAwake = false;
+  closePlayer();
+  setState(cfg.handsfree ? 'listening' : 'standby');
+  if (cfg.handsfree) scheduleRestart(300);
+});
 
-/* ---------- शुरुआत ---------- */
-function greet(){
-  const h=new Date().getHours();
-  const g=h<12?'सुप्रभात':(h<17?'नमस्ते':'शुभ संध्या');
-  sayQ(`${g} ${cfg.name}। मैं जार्विस हूँ। बताइए, क्या सेवा करूँ?`);
-}
-function begin(){
-  if(started)return;
-  started=true;$('start').style.display='none';
-  initRec();
-  if(!cfg.key){openSettings();return}
-  const sf=findFav(cfg.start);
-  if(sf){showMedia(sf);setState('idle')}else greet();
-}
-$('start').onclick=begin;
-/* Chrome खुलते ही अपने आप शुरू (सेटिंग भरी हो तब) */
-window.addEventListener('load',()=>setTimeout(()=>{if(cfg.key&&cfg.start)begin()},800));
-setState('idle');
-})();
+document.getElementById('btnSettings').addEventListener('click', () => {
+  document.getElementById('settingsModal').classList.add('open');
+});
+document.getElementById('btnCloseSettings').addEventListener('click', () => {
+  document.getElementById('settingsModal').classList.remove('open');
+});
+document.getElementById('btnSaveSettings').addEventListener('click', saveCfg);
+
+// Boot
+window.addEventListener('DOMContentLoaded', async () => {
+  loadCfg();
+  if (cfg.autoStart) {
+    const msg = await toolPlayMedia(cfg.autoStart);
+    addMsg('ai', msg);
+  }
+  if (cfg.handsfree) {
+    startListening(false);
+  }
+});
 </script>
 </body>
 </html>
