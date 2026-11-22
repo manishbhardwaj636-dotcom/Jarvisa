@@ -8,7 +8,39 @@
 :root{--c:#2de2ff;--c2:#0a6cff}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:radial-gradient(ellipse at center,#06182b 0%,#02060d 70%);color:#cfefff;font-family:"Segoe UI","Nirmala UI",system-ui,sans-serif;overflow:hidden;user-select:none}
+body.thinking{--c:#ffcc4d}<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<title>Jarvis</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--c:#2de2ff;--c2:#0a6cff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:radial-gradient(ellipse at center,#06182b 0%,#02060d 70%);color:#cfefff;font-family:"Segoe UI","Nirmala UI",system-ui,sans-serif;overflow:hidden;user-select:none}
 body.thinking{--c:#ffcc4d}
+#top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:20px 30px;z-index:5}
+#clock{font-size:52px;font-weight:200;letter-spacing:3px;color:var(--c);text-shadow:0 0 18px rgba(45,226,255,.5)}
+#date{font-size:18px;opacity:.75;margin-top:2px}
+#btns button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#cfefff;font-size:22px;width:46px;height:46px;border-radius:50%;margin-left:8px;cursor:pointer}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding-bottom:120px}
+#orb{position:relative;width:min(44vh,44vw);height:min(44vh,44vw);cursor:pointer}
+.ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent}
+.r1{border-top-color:var(--c);border-bottom-color:var(--c);animation:spin 6s linear infinite;box-shadow:0 0 25px rgba(45,226,255,.3)}
+.r2{inset:9%;border-left-color:var(--c2);border-right-color:var(--c2);animation:spin 9s linear infinite reverse}
+.r3{inset:18%;border:1px dashed rgba(45,226,255,.5);animation:spin 20s linear infinite}
+.core{position:absolute;inset:28%;border-radius:50%;background:radial-gradient(circle,var(--c) 0%,rgba(10,108,255,.35) 55%,transparent 72%);animation:pulse 3s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(1.12);opacity:.8}}
+body.listening .core{animation-duration:1.2s}
+body.thinking .r1{animation-duration:1.4s}
+body.speaking .core{animation-duration:.5s}
+#label{margin-top:18px;font-size:22px;color:var(--c);height:30px;letter-spacing:1px}
+#talk{position:fixed;bottom:26px;left:8%;right:8%;text-align:center;z-index:4}
+#you{font-size:18px;opacity:.6;min-height:26px}
+#bot{font-size:34px;color:#fff;text-shadow:0 0 14px rgba(45,226,255,.5);min-height:90px;line-height:1.35}
+#dbg{position:fixed;left:12px;top:92px;font-size:14px;color:#ffb4a2;z-index:6;max-width:60vw;user-select:text}
+#media{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:170px;width:min(560px,60vw);background:rgba(2,10,20,.92);border:1px solid rgba(45,226,255,.4);border-radius:12px
 #top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:20px 30px;z-index:5}
 #clock{font-size:52px;font-weight:200;letter-spacing:3px;color:var(--c);text-shadow:0 0 18px rgba(45,226,255,.5)}
 #date{font-size:18px;opacity:.75;margin-top:2px}
