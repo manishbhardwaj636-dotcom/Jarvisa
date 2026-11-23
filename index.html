@@ -1,31 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>J.A.R.V.I.S. Interactive AI Avatar</title>
+<title>J.A.R.V.I.S. MK-1 // FULL POWER AI</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
   body {
-    background: radial-gradient(circle at center, #121a2b 0%, #060911 100%);
+    background: radial-gradient(circle at center, #121a2b 0%, #050811 100%);
     color: #e0f7ff;
     height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 14px 18px;
     overflow: hidden;
   }
 
   /* HUD Header */
   .hud-header {
     width: 100%;
-    max-width: 680px;
+    max-width: 780px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+    border-bottom: 1px solid rgba(0, 229, 255, 0.35);
     padding-bottom: 10px;
     font-size: 13px;
     letter-spacing: 1.2px;
@@ -33,27 +33,42 @@
   }
   .status-dot {
     display: inline-block;
-    width: 8px; height: 8px;
+    width: 9px; height: 9px;
     background: #00ffaa;
     border-radius: 50%;
     margin-right: 6px;
-    box-shadow: 0 0 8px #00ffaa;
+    box-shadow: 0 0 10px #00ffaa;
   }
   .header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+  }
+  .badge {
+    background: rgba(0, 255, 170, 0.12);
+    border: 1px solid rgba(0, 255, 170, 0.4);
+    color: #00ffaa;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge.offline {
+    background: rgba(255, 193, 7, 0.12);
+    border-color: rgba(255, 193, 7, 0.4);
+    color: #ffd54f;
   }
   .icon-btn {
-    background: rgba(0, 229, 255, 0.12);
-    border: 1px solid rgba(0, 229, 255, 0.4);
+    background: rgba(0, 229, 255, 0.14);
+    border: 1px solid rgba(0, 229, 255, 0.45);
     color: #00e5ff;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 12px;
     cursor: pointer;
+    transition: 0.2s;
   }
-  .icon-btn:hover { background: rgba(0, 229, 255, 0.28); }
+  .icon-btn:hover { background: rgba(0, 229, 255, 0.3); }
 
   /* Robot Stage */
   .stage {
@@ -64,14 +79,15 @@
     justify-content: center;
     flex: 1;
     width: 100%;
+    max-width: 780px;
   }
 
   /* Iron Man HUD Ring behind robot */
   .hud-ring {
     position: absolute;
-    width: 310px;
-    height: 310px;
-    border: 2px dashed rgba(0, 229, 255, 0.25);
+    width: 300px;
+    height: 300px;
+    border: 2px dashed rgba(0, 229, 255, 0.28);
     border-radius: 50%;
     animation: spin 18s linear infinite;
     pointer-events: none;
@@ -79,8 +95,8 @@
   }
   .hud-ring.active {
     border-color: #00e5ff;
-    box-shadow: 0 0 30px rgba(0, 229, 255, 0.4), inset 0 0 30px rgba(0, 229, 255, 0.2);
-    animation: spin 4s linear infinite;
+    box-shadow: 0 0 35px rgba(0, 229, 255, 0.45), inset 0 0 30px rgba(0, 229, 255, 0.25);
+    animation: spin 3.5s linear infinite;
   }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
@@ -96,19 +112,19 @@
   }
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-12px); }
+    50% { transform: translateY(-10px); }
   }
-  .robot.dancing { animation: dance 0.6s ease-in-out infinite; }
+  .robot.dancing { animation: dance 0.55s ease-in-out infinite; }
   @keyframes dance {
-    0%, 100% { transform: translateY(0) rotate(-6deg); }
-    50% { transform: translateY(-18px) rotate(6deg); }
+    0%, 100% { transform: translateY(0) rotate(-7deg); }
+    50% { transform: translateY(-18px) rotate(7deg); }
   }
 
   /* Head */
   .head {
     position: relative;
-    width: 170px;
-    height: 130px;
+    width: 164px;
+    height: 124px;
     background: radial-gradient(circle at 30% 25%, #ffffff, #d9e2ec);
     border-radius: 65px 65px 55px 55px;
     box-shadow: inset -8px -10px 20px rgba(0,0,0,0.18), 0 10px 25px rgba(0,0,0,0.4);
@@ -122,7 +138,7 @@
   .ear {
     position: absolute;
     width: 16px;
-    height: 46px;
+    height: 44px;
     background: #eef4fa;
     border-radius: 10px;
     box-shadow: 0 0 12px #00e5ff;
@@ -133,10 +149,10 @@
 
   /* Black Glossy Visor */
   .visor {
-    width: 136px;
-    height: 88px;
+    width: 132px;
+    height: 84px;
     background: linear-gradient(145deg, #0a0f1c, #182238);
-    border-radius: 42px;
+    border-radius: 40px;
     box-shadow: inset 0 4px 12px rgba(255,255,255,0.15), 0 0 10px rgba(0,0,0,0.6);
     display: flex;
     align-items: center;
@@ -148,22 +164,20 @@
 
   /* LED Eyes */
   .eye {
-    width: 30px;
-    height: 18px;
+    width: 28px;
+    height: 17px;
     border-top: 6px solid #00e5ff;
     border-radius: 50% 50% 0 0;
     filter: drop-shadow(0 0 8px #a855f7);
     transition: all 0.25s ease;
   }
   .robot.listening .eye {
-    height: 28px;
+    height: 26px;
     border-radius: 50%;
     border: 5px solid #00ffaa;
     filter: drop-shadow(0 0 12px #00ffaa);
   }
-  .robot.speaking .eye {
-    animation: talkPulse 0.25s infinite alternate;
-  }
+  .robot.speaking .eye { animation: talkPulse 0.25s infinite alternate; }
   @keyframes talkPulse {
     from { transform: scaleY(0.7); border-color: #00e5ff; }
     to { transform: scaleY(1.2); border-color: #c084fc; }
@@ -174,12 +188,12 @@
     border-radius: 4px;
     background: #00e5ff;
     border: none;
-    box-shadow: 0 0 16px #00e5ff;
+    box-shadow: 0 0 18px #00e5ff;
   }
 
   /* Neck Glow */
   .neck {
-    width: 70px;
+    width: 68px;
     height: 10px;
     background: #00e5ff;
     border-radius: 10px;
@@ -197,8 +211,8 @@
     margin-top: -2px;
   }
   .torso {
-    width: 120px;
-    height: 115px;
+    width: 116px;
+    height: 110px;
     background: radial-gradient(circle at 35% 30%, #ffffff, #cfd9e5);
     border-radius: 45px 45px 50px 50px;
     box-shadow: inset -8px -10px 18px rgba(0,0,0,0.18), 0 15px 30px rgba(0,0,0,0.4);
@@ -228,18 +242,18 @@
   }
   .robot.ironman .arc-reactor {
     border-color: #00e5ff;
-    box-shadow: 0 0 20px #00e5ff, inset 0 0 10px #00e5ff;
+    box-shadow: 0 0 22px #00e5ff, inset 0 0 12px #00e5ff;
   }
   .robot.ironman .arc-core {
     background: #ffffff;
-    box-shadow: 0 0 15px #00e5ff;
+    box-shadow: 0 0 16px #00e5ff;
   }
 
   /* Arms */
   .arm {
     position: absolute;
-    width: 34px;
-    height: 76px;
+    width: 32px;
+    height: 74px;
     background: radial-gradient(circle at 30% 30%, #ffffff, #d2dce8);
     border-radius: 20px;
     top: 12px;
@@ -252,14 +266,14 @@
   }
   .arm::after {
     content: "";
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     border-radius: 50%;
     border: 2.5px solid #00e5ff;
     box-shadow: 0 0 8px #00e5ff;
   }
-  .arm.left { left: -28px; transform: rotate(22deg); transform-origin: top center; }
-  .arm.right { right: -28px; transform: rotate(-22deg); transform-origin: top center; }
+  .arm.left { left: -26px; transform: rotate(22deg); transform-origin: top center; }
+  .arm.right { right: -26px; transform: rotate(-22deg); transform-origin: top center; }
   .robot.waving .arm.right { animation: waveHand 0.5s ease-in-out 4; }
   @keyframes waveHand {
     0%, 100% { transform: rotate(-130deg); }
@@ -274,27 +288,41 @@
     z-index: 1;
   }
   .leg {
-    width: 36px;
-    height: 40px;
+    width: 34px;
+    height: 38px;
     background: radial-gradient(circle at 30% 30%, #f5f9fc, #c5d1e0);
     border-radius: 14px 14px 18px 18px;
   }
 
-  /* Live Hearing Strip */
-  .heard-strip {
-    margin-top: 14px;
+  /* Live Status & Timer Bar */
+  .telemetry-strip {
+    margin-top: 12px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    justify-content: center;
     font-size: 12px;
-    color: #00ffaa;
-    min-height: 18px;
-    text-align: center;
+    min-height: 20px;
+  }
+  .heard-text { color: #00ffaa; }
+  .timer-pill {
+    background: rgba(255, 65, 108, 0.2);
+    border: 1px solid #ff416c;
+    color: #ff8fa3;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: none;
   }
 
   /* Speech Bubble */
   .speech-box {
     margin-top: 8px;
-    max-width: 560px;
+    max-width: 640px;
     width: 100%;
-    min-height: 54px;
+    min-height: 58px;
+    max-height: 110px;
+    overflow-y: auto;
     background: rgba(0, 229, 255, 0.08);
     border: 1px solid rgba(0, 229, 255, 0.35);
     border-radius: 14px;
@@ -303,33 +331,34 @@
     font-size: 15px;
     line-height: 1.45;
     color: #d8f8ff;
-    box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.12);
   }
 
-  /* Quick Action Chips */
+  /* Action Dock Chips */
   .quick-chips {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
+    gap: 7px;
     margin-top: 10px;
-    max-width: 600px;
+    max-width: 680px;
   }
   .chip {
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15, 23, 42, 0.9);
     border: 1px solid rgba(0, 229, 255, 0.35);
     color: #a5f3fc;
     padding: 6px 12px;
     border-radius: 16px;
     font-size: 12px;
     cursor: pointer;
+    transition: 0.2s;
   }
-  .chip:hover { background: rgba(0, 229, 255, 0.2); }
+  .chip:hover { background: rgba(0, 229, 255, 0.22); transform: translateY(-1px); }
 
   /* Controls */
   .controls {
     width: 100%;
-    max-width: 640px;
+    max-width: 680px;
     display: flex;
     gap: 10px;
     margin-top: 10px;
@@ -338,8 +367,8 @@
     flex: 1;
     padding: 12px 16px;
     border-radius: 25px;
-    border: 1px solid rgba(0, 229, 255, 0.4);
-    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(0, 229, 255, 0.45);
+    background: rgba(15, 23, 42, 0.9);
     color: #fff;
     outline: none;
     font-size: 14px;
@@ -356,10 +385,10 @@
   }
   .mic-btn.active {
     background: linear-gradient(135deg, #00c853, #009624);
-    box-shadow: 0 0 15px rgba(0, 200, 83, 0.7);
+    box-shadow: 0 0 18px rgba(0, 200, 83, 0.75);
   }
 
-  /* Settings Modal */
+  /* Modal (Settings & Notes) */
   .modal-backdrop {
     position: fixed;
     inset: 0;
@@ -377,24 +406,29 @@
     border-radius: 16px;
     padding: 20px;
     width: 100%;
-    max-width: 440px;
+    max-width: 460px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     box-shadow: 0 0 30px rgba(0, 229, 255, 0.25);
   }
   .modal-card label { font-size: 12px; color: #7dd3fc; display: block; margin-bottom: 4px; }
-  .modal-card input[type="text"], .modal-card input[type="password"] { width: 100%; border-radius: 10px; padding: 10px; }
+  .modal-card input[type="text"], .modal-card input[type="password"], .modal-card textarea {
+    width: 100%; border-radius: 10px; padding: 10px;
+    background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(0, 229, 255, 0.4); color: #fff;
+  }
   .check-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #e2e8f0; cursor: pointer; }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
 </style>
 </head>
 <body>
 
   <div class="hud-header">
-    <div><span class="status-dot"></span>J.A.R.V.I.S. MK-1</div>
+    <div><span class="status-dot"></span>J.A.R.V.I.S. MK-1 PRO</div>
     <div class="header-right">
-      <span id="modeLabel">STANDBY</span>
+      <span id="pcStatusBadge" class="badge offline" title="Run jarvis_pc.py for Laptop Control">PC: BROWSER ONLY</span>
+      <span id="modeLabel" style="font-weight:600;">STANDBY</span>
+      <button class="icon-btn" onclick="openNotesModal()">📝 Notes</button>
       <button class="icon-btn" onclick="openSettings()">⚙ Settings</button>
     </div>
   </div>
@@ -425,33 +459,39 @@
       </div>
     </div>
 
-    <div class="heard-strip" id="heardStrip"></div>
+    <div class="telemetry-strip">
+      <span class="heard-text" id="heardStrip"></span>
+      <span class="timer-pill" id="timerPill">⏱ 00:00</span>
+    </div>
 
     <div class="speech-box" id="speechBox">
-      नमस्ते! मैं जार्विस हूँ। बात करने के लिए <b>Mic Start</b> दबाएं या नीचे लिखें।
+      नमस्ते! मैं जार्विस MK-1 हूँ। नई API Key और सभी पावर फीचर्स सक्रिय हैं। बात करने के लिए <b>🎤 Mic Start</b> दबाएं।
     </div>
 
     <div class="quick-chips">
       <button class="chip" onclick="processCommand('morning aarti chalao')">🌅 Morning Aarti</button>
       <button class="chip" onclick="processCommand('youtube par hanuman chalisa lagao')">▶ Hanuman Chalisa</button>
+      <button class="chip" onclick="processCommand('delhi ka mausam kaisa hai')">⛅ Delhi Weather</button>
       <button class="chip" onclick="processCommand('iron man mode')">⚡ Iron Man Mode</button>
-      <button class="chip" onclick="processCommand('calculator kholo')">🧮 Open Calculator</button>
+      <button class="chip" onclick="processCommand('calculator kholo')">🧮 Calculator</button>
+      <button class="chip" onclick="processCommand('notepad kholo')">📄 Notepad</button>
+      <button class="chip" onclick="processCommand('screenshot lo')">📸 Screenshot</button>
     </div>
   </div>
 
   <div class="controls">
     <button id="micBtn" class="action-btn mic-btn" onclick="toggleMic()">🎤 Mic Start</button>
-    <input type="text" id="textInput" placeholder="Boliye ya likhein (e.g., Jarvis bhajan chalao, time kya hai)..." onkeypress="if(event.key==='Enter') sendText()">
+    <input type="text" id="textInput" placeholder="Kuch bhi bolein ya likhein (e.g., GST nikalo, 2 minute timer, YouTube, PC control)..." onkeypress="if(event.key==='Enter') sendText()">
     <button class="action-btn" onclick="sendText()">Send</button>
   </div>
 
   <!-- Settings Modal -->
   <div class="modal-backdrop" id="settingsModal">
     <div class="modal-card">
-      <h3 style="color:#00e5ff;">⚙ JARVIS Settings</h3>
+      <h3 style="color:#00e5ff;">⚙ JARVIS Power Configuration</h3>
       <div>
-        <label>Gemini API Key (AIzaSy...)</label>
-        <input type="password" id="inpApiKey" placeholder="Paste Gemini API Key here">
+        <label>Gemini / Vertex AI API Key (AQ. / AIza...)</label>
+        <input type="password" id="inpApiKey" placeholder="Paste API Key here">
       </div>
       <div>
         <label>Morning Aarti / Playlist Link</label>
@@ -459,11 +499,11 @@
       </div>
       <label class="check-row">
         <input type="checkbox" id="chkWakeWord">
-        <span>Sirf "Jarvis" bolne par jawab de (Wake Word)</span>
+        <span>Sirf "Jarvis" bolne par jawab de (Wake Word Mode)</span>
       </label>
       <label class="check-row">
         <input type="checkbox" id="chkContinuous">
-        <span>Continuous Hands-Free Mic (Baar-baar dabana na pade)</span>
+        <span>Continuous Hands-Free Mic (Lagatar sunta rahe)</span>
       </label>
       <div class="modal-actions">
         <button class="icon-btn" onclick="closeSettings()">Cancel</button>
@@ -472,14 +512,28 @@
     </div>
   </div>
 
+  <!-- Voice Notes Modal -->
+  <div class="modal-backdrop" id="notesModal">
+    <div class="modal-card">
+      <h3 style="color:#00e5ff;">📝 JARVIS Quick Memory / Notes</h3>
+      <textarea id="txtNotesArea" rows="6" placeholder="Aapke voice notes aur reminders yahan save hote hain..."></textarea>
+      <div class="modal-actions">
+        <button class="icon-btn" onclick="closeNotesModal()">Close</button>
+        <button class="action-btn" onclick="saveNotes()">Save Notes</button>
+      </div>
+    </div>
+  </div>
+
 <script>
+  // Pre-configured with your new AQ. API key and Morning Aarti URL
+  const DEFAULT_API_KEY = "AQ.Ab8RN6KY5BkGuYBephEnzA23d-xIJCFCuMP9P1cfsi3tnhS2cA";
   const DEFAULT_AARTI_URL = "https://www.instagram.com/reel/DYt-oFbM4ea/?gwpx=MmtmbmMyemZ6dnMz";
-  const PC_BRIDGE_URL = "http://127.0.0.1:5050/run";
+  const PC_BRIDGE_URL = "http://127.0.0.1:5050";
 
   let config = {
-    apiKey: localStorage.getItem('jarvis_api_key') || "",
+    apiKey: localStorage.getItem('jarvis_api_key_v2') || DEFAULT_API_KEY,
     morningUrl: localStorage.getItem('jarvis_morning_url') || DEFAULT_AARTI_URL,
-    wakeWord: localStorage.getItem('jarvis_wake_word') === 'true', // default false so it replies immediately when mic is clicked
+    wakeWord: localStorage.getItem('jarvis_wake_word') === 'true',
     continuous: localStorage.getItem('jarvis_continuous') !== 'false'
   };
 
@@ -490,19 +544,38 @@
   const modeLabel = document.getElementById('modeLabel');
   const micBtn = document.getElementById('micBtn');
   const textInput = document.getElementById('textInput');
+  const pcStatusBadge = document.getElementById('pcStatusBadge');
 
   let chatHistory = [
     {
       role: "user",
-      parts: [{ text: "Tum J.A.R.V.I.S. ho, ek smart aur vinamra AI assistant. Hamesha chhote, spasht (1-2 line) aur natural Hindi (Devanagari) ya Hinglish mein jawab do. Markdown symbols (*, #) mat use karna." }]
+      parts: [{ text: "Tum J.A.R.V.I.S. ho, ek bahut hi smart, tez aur vinamra AI assistant. Hamesha chhote (1-2 line), spasht aur natural Hindi (Devanagari) ya Hinglish mein jawab do taaki bolne mein achha lage. Markdown symbols (*, #) bilkul mat use karna." }]
     },
     {
       role: "model",
-      parts: [{ text: "जी बिल्कुल, मैं तैयार हूँ।" }]
+      parts: [{ text: "जी बिल्कुल, मैं पूरी तरह तैयार हूँ। बताइए क्या आदेश है?" }]
     }
   ];
 
-  // Settings Modal Functions
+  // Check if local Python PC Controller is running
+  async function checkPCBridge() {
+    try {
+      const res = await fetch(`${PC_BRIDGE_URL}/ping`);
+      if (res.ok) {
+        pcStatusBadge.textContent = "PC: CONNECTED";
+        pcStatusBadge.classList.remove('offline');
+        return true;
+      }
+    } catch (e) {
+      pcStatusBadge.textContent = "PC: BROWSER ONLY";
+      pcStatusBadge.classList.add('offline');
+    }
+    return false;
+  }
+  setInterval(checkPCBridge, 5000);
+  checkPCBridge();
+
+  // Settings & Notes Modals
   function openSettings() {
     document.getElementById('inpApiKey').value = config.apiKey;
     document.getElementById('inpMorningUrl').value = config.morningUrl;
@@ -510,16 +583,14 @@
     document.getElementById('chkContinuous').checked = config.continuous;
     document.getElementById('settingsModal').classList.add('open');
   }
-  function closeSettings() {
-    document.getElementById('settingsModal').classList.remove('open');
-  }
+  function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
   function saveSettings() {
-    config.apiKey = document.getElementById('inpApiKey').value.trim();
+    config.apiKey = document.getElementById('inpApiKey').value.trim() || DEFAULT_API_KEY;
     config.morningUrl = document.getElementById('inpMorningUrl').value.trim() || DEFAULT_AARTI_URL;
     config.wakeWord = document.getElementById('chkWakeWord').checked;
     config.continuous = document.getElementById('chkContinuous').checked;
 
-    localStorage.setItem('jarvis_api_key', config.apiKey);
+    localStorage.setItem('jarvis_api_key_v2', config.apiKey);
     localStorage.setItem('jarvis_morning_url', config.morningUrl);
     localStorage.setItem('jarvis_wake_word', config.wakeWord);
     localStorage.setItem('jarvis_continuous', config.continuous);
@@ -528,7 +599,18 @@
     speak("Settings save ho gayi hain.");
   }
 
-  // Text-to-Speech (Supports Devanagari Hindi & English)
+  function openNotesModal() {
+    document.getElementById('txtNotesArea').value = localStorage.getItem('jarvis_notes') || "";
+    document.getElementById('notesModal').classList.add('open');
+  }
+  function closeNotesModal() { document.getElementById('notesModal').classList.remove('open'); }
+  function saveNotes() {
+    localStorage.setItem('jarvis_notes', document.getElementById('txtNotesArea').value);
+    closeNotesModal();
+    speak("Notes save kar diye gaye hain.");
+  }
+
+  // Text-to-Speech Engine (Hindi Devanagari + Hinglish)
   let isSpeaking = false;
   function speak(text) {
     const clean = text.replace(/[*#_`]/g, '').trim();
@@ -555,7 +637,7 @@
       const enVoice = voices.find(v => v.lang.includes('en-IN') || v.lang.startsWith('en'));
       if (enVoice) utterance.voice = enVoice;
     }
-    utterance.rate = 1.02;
+    utterance.rate = 1.03;
 
     utterance.onstart = () => robot.classList.add('speaking');
     utterance.onend = () => {
@@ -576,16 +658,71 @@
     robot.classList.remove('waving');
     void robot.offsetWidth;
     robot.classList.add('waving');
-    speak("नमस्ते! बताइए मैं आपकी क्या सहायता कर सकता हूँ?");
+    speak("नमस्ते! बताइए मैं आपकी क्या मदद कर सकता हूँ?");
   }
 
-  // Send command to local Python PC Control server (if running)
-  async function tryPCCommand(actionName) {
+  // Timer / Reminder Engine
+  let activeTimerInterval = null;
+  function startCountdownTimer(seconds, label = "Timer") {
+    if (activeTimerInterval) clearInterval(activeTimerInterval);
+    let remaining = seconds;
+    const pill = document.getElementById('timerPill');
+    pill.style.display = 'inline-block';
+
+    const updatePill = () => {
+      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const s = String(remaining % 60).padStart(2, '0');
+      pill.textContent = `⏱ ${m}:${s}`;
+    };
+    updatePill();
+
+    activeTimerInterval = setInterval(() => {
+      remaining--;
+      updatePill();
+      if (remaining <= 0) {
+        clearInterval(activeTimerInterval);
+        pill.style.display = 'none';
+        playAlarmBeep();
+        speak(`समय पूरा हो गया है! आपका ${label} समाप्त हुआ।`);
+      }
+    }, 1000);
+  }
+
+  function playAlarmBeep() {
     try {
-      const res = await fetch(PC_BRIDGE_URL, {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      for (let i = 0; i < 4; i++) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.value = 880;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + i * 0.35);
+        osc.stop(ctx.currentTime + i * 0.35 + 0.2);
+      }
+    } catch (e) {}
+  }
+
+  // Live Weather Fetch (Open-Meteo Free API - No key needed)
+  async function getDelhiWeather() {
+    try {
+      const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=28.52&longitude=77.23&current_weather=true");
+      const data = await res.json();
+      const temp = data.current_weather.temperature;
+      const wind = data.current_weather.windspeed;
+      speak(`नई दिल्ली में अभी तापमान ${temp} डिग्री सेल्सियस है और हवा की गति ${wind} किलोमीटर प्रति घंटा है।`);
+    } catch (e) {
+      speak("मौसम की जानकारी अभी उपलब्ध नहीं हो पा रही है।");
+    }
+  }
+
+  // Send Command to Python PC Controller
+  async function runPCAction(action, extra = "") {
+    try {
+      const res = await fetch(`${PC_BRIDGE_URL}/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: actionName })
+        body: JSON.stringify({ action, extra })
       });
       const data = await res.json();
       if (data.status === 'ok') {
@@ -593,12 +730,12 @@
         return true;
       }
     } catch (e) {
-      return false; // Python script not running on PC
+      speak("लैपटॉप कंट्रोल के लिए पहले कंप्यूटर पर jarvis_pc.py स्क्रिप्ट चालू करें।");
     }
     return false;
   }
 
-  // Main Command Processor
+  // Master Command Processor
   async function processCommand(rawCmd) {
     const cmd = rawCmd.toLowerCase().trim();
     if (!cmd) return;
@@ -611,57 +748,103 @@
       return;
     }
 
-    // 2. YouTube Search / Bhajan / Song
+    // 2. YouTube Direct Search / Play
     if (cmd.includes('youtube') || cmd.includes('यूट्यूब') || cmd.includes('bhajan') || cmd.includes('भजन') || cmd.includes('chalisa') || cmd.includes('चालीसा') || cmd.includes('gaana') || cmd.includes('song')) {
       let query = rawCmd.replace(/open|youtube|यूट्यूब|kholo|खोलो|par|पर|play|chalao|चलाओ|lagao|लगाओ|search|jarvis|जार्विस/gi, '').trim();
       const url = query ? `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}` : 'https://www.youtube.com';
-      speak(query ? `यूट्यूब पर ${query} चला रहा हूँ।` : "यूट्यूब खोल रहा हूँ।");
+      speak(query ? `यूट्यूब पर ${query} खोल रहा हूँ।` : "यूट्यूब खोल रहा हूँ।");
       window.open(url, '_blank');
       return;
     }
 
-    // 3. PC Control Commands (Calculator, Notepad, Chrome, Shutdown)
-    if (cmd.includes('calculator') || cmd.includes('कैलकुलेटर')) {
-      const handled = await tryPCCommand('calculator');
-      if (!handled) {
-        speak("कैलकुलेटर खोलने के लिए पहले लैपटॉप पर Python स्क्रिप्ट चालू करें।");
-      }
+    // 3. Google Search & Maps Navigation
+    if (cmd.includes('google') || cmd.includes('गूगल') || cmd.includes('search karo') || cmd.includes('सर्च करो')) {
+      let q = rawCmd.replace(/google|गूगल|par|पर|search|सर्च|karo|करो|jarvis/gi, '').trim();
+      speak(`गूगल पर ${q} सर्च कर रहा हूँ।`);
+      window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
       return;
     }
-    if (cmd.includes('notepad') || cmd.includes('नोटपैड')) {
-      const handled = await tryPCCommand('notepad');
-      if (!handled) speak("नोटपैड के लिए लैपटॉप पर Python कंट्रोलर चालू करें।");
-      return;
-    }
-    if (cmd.includes('shutdown') || cmd.includes('बंद कर दो') || cmd.includes('computer band')) {
-      const handled = await tryPCCommand('shutdown');
-      if (!handled) speak("लैपटॉप बंद करने के लिए Python स्क्रिप्ट चालू होनी चाहिए।");
+    if (cmd.includes('map') || cmd.includes('rasta') || cmd.includes('रास्ता') || cmd.includes('direction')) {
+      let place = rawCmd.replace(/google|maps|map|ka|rasta|रास्ता|dikhao|दिखाओ|direction|to/gi, '').trim();
+      speak(`${place || 'लोकेशन'} का रास्ता गूगल मैप्स पर खोल रहा हूँ।`);
+      window.open(`https://www.google.com/maps/search/${encodeURIComponent(place || 'New Delhi')}`, '_blank');
       return;
     }
 
-    // 4. Iron Man Mode
+    // 4. WhatsApp Web
+    if (cmd.includes('whatsapp') || cmd.includes('व्हाट्सएप')) {
+      speak("व्हाट्सएप वेब खोल रहा हूँ।");
+      window.open("https://web.whatsapp.com", '_blank');
+      return;
+    }
+
+    // 5. Weather
+    if (cmd.includes('weather') || cmd.includes('mausam') || cmd.includes('मौसम') || cmd.includes('temperature')) {
+      getDelhiWeather();
+      return;
+    }
+
+    // 6. Voice Timer / Alarm (e.g. "5 minute ka timer", "10 second timer")
+    if (cmd.includes('timer') || cmd.includes('टाइमर') || cmd.includes('alarm') || cmd.includes('अलार्म')) {
+      const numMatch = cmd.match(/(\d+)/);
+      if (numMatch) {
+        const val = parseInt(numMatch[1], 10);
+        const isSeconds = cmd.includes('second') || cmd.includes('सेकंड');
+        const totalSec = isSeconds ? val : val * 60;
+        speak(`${val} ${isSeconds ? 'सेकंड' : 'मिनट'} का टाइमर शुरू कर दिया गया है।`);
+        startCountdownTimer(totalSec, `${val} ${isSeconds ? 'सेकंड' : 'मिनट'}`);
+        return;
+      }
+    }
+
+    // 7. Save Voice Note ("note likho ...")
+    if (cmd.startsWith('note ') || cmd.includes('note likho') || cmd.includes('नोट लिखो') || cmd.includes('yaad rakhna')) {
+      const noteContent = rawCmd.replace(/note likho|नोट लिखो|note|yaad rakhna|jarvis/gi, '').trim();
+      if (noteContent) {
+        const existing = localStorage.getItem('jarvis_notes') || "";
+        const updated = existing + `\n• [${new Date().toLocaleTimeString()}] ${noteContent}`;
+        localStorage.setItem('jarvis_notes', updated.trim());
+        speak("मैंने यह बात आपके नोट्स में सेव कर ली है।");
+        return;
+      }
+    }
+
+    // 8. PC Control Commands (Calculator, Notepad, Chrome, Paint, Volume, Screenshot, Lock, Shutdown)
+    if (cmd.includes('calculator') || cmd.includes('कैलकुलेटर')) return runPCAction('calculator');
+    if (cmd.includes('notepad') || cmd.includes('नोटपैड')) return runPCAction('notepad');
+    if (cmd.includes('chrome') || cmd.includes('क्रोम')) return runPCAction('chrome');
+    if (cmd.includes('paint') || cmd.includes('पेंट')) return runPCAction('paint');
+    if (cmd.includes('screenshot') || cmd.includes('स्क्रीनशॉट')) return runPCAction('screenshot');
+    if (cmd.includes('volume up') || cmd.includes('awaaz badhao') || cmd.includes('आवाज बढ़ाओ')) return runPCAction('vol_up');
+    if (cmd.includes('volume down') || cmd.includes('awaaz kam') || cmd.includes('आवाज कम')) return runPCAction('vol_down');
+    if (cmd.includes('mute') || cmd.includes('चुप')) return runPCAction('vol_mute');
+    if (cmd.includes('lock pc') || cmd.includes('laptop lock') || cmd.includes('स्क्रीन लॉक')) return runPCAction('lock');
+    if (cmd.includes('cancel shutdown') || cmd.includes('shutdown roko')) return runPCAction('abort_shutdown');
+    if (cmd.includes('shutdown') || cmd.includes('computer band') || cmd.includes('लैपटॉप बंद')) return runPCAction('shutdown');
+
+    // 9. Iron Man Mode
     if (cmd.includes('iron man') || cmd.includes('combat') || cmd.includes('power mode')) {
       robot.classList.toggle('ironman');
       hudRing.classList.toggle('active');
       const isOn = robot.classList.contains('ironman');
       modeLabel.textContent = isOn ? "IRON MAN MODE" : "STANDBY";
-      speak(isOn ? "आर्क रिएक्टर ऑन! आयरन मैन मोड एक्टिवेट हो गया है।" : "आयरन मैन मोड बंद कर दिया गया है।");
+      speak(isOn ? "आर्क रिएक्टर ऑन! आयरन मैन कॉम्बैट मोड सक्रिय है।" : "आयरन मैन मोड बंद कर दिया गया है।");
       return;
     }
 
-    // 5. Time & Date
+    // 10. Time & Date
     if (cmd.includes('time') || cmd.includes('samay') || cmd.includes('समय') || cmd.includes('बजे')) {
       const now = new Date().toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
       speak(`अभी समय ${now} हो रहा है।`);
       return;
     }
-    if (cmd.includes('date') || cmd.includes('tarikh') || cmd.includes('तारीख') || cmd.includes('दिन')) {
+    if (cmd.includes('date') || cmd.includes('tarikh') || cmd.includes('तारीख')) {
       const today = new Date().toLocaleDateString('hi-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       speak(`आज ${today} है।`);
       return;
     }
 
-    // 6. Dance
+    // 11. Dance
     if (cmd.includes('dance') || cmd.includes('नाचो')) {
       robot.classList.add('dancing');
       modeLabel.textContent = "PARTY MODE";
@@ -673,44 +856,56 @@
       return;
     }
 
-    // 7. Ask Gemini AI for everything else!
-    askGemini(rawCmd);
+    // 12. Ask AI (Smart Dual-Endpoint for AQ. & AIza keys)
+    askGeminiSmart(rawCmd);
   }
 
-  async function askGemini(promptText) {
-    if (!config.apiKey) {
-      speak("कृपया ऊपर Settings बटन दबाकर अपनी Gemini API Key सेव करें, फिर मैं आपके हर सवाल का जवाब दे पाऊँगा।");
-      openSettings();
-      return;
-    }
-
+  async function askGeminiSmart(promptText) {
     modeLabel.textContent = "THINKING...";
     chatHistory.push({ role: "user", parts: [{ text: promptText }] });
 
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${config.apiKey}`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: chatHistory,
-          generationConfig: { temperature: 0.7, maxOutputTokens: 180 }
-        })
-      });
+    const payload = {
+      contents: chatHistory,
+      generationConfig: { temperature: 0.7, maxOutputTokens: 200 }
+    };
 
-      const data = await response.json();
-      modeLabel.textContent = "STANDBY";
+    // Endpoint 1: Vertex AI Express (for AQ. keys) & Endpoint 2: Google AI Studio (for AIza / AQ keys)
+    const endpoints = [
+      `https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent?key=${config.apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${config.apiKey}`
+    ];
 
-      if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-        const reply = data.candidates[0].content.parts[0].text;
-        chatHistory.push({ role: "model", parts: [{ text: reply }] });
-        speak(reply);
-      } else {
-        speak("API Key में कोई दिक्कत है, कृपया Settings में जांचें।");
+    let replyText = null;
+    let lastError = "";
+
+    for (const url of endpoints) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+          replyText = data.candidates[0].content.parts[0].text;
+          break;
+        } else if (data.error) {
+          lastError = data.error.message || "API Error";
+        }
+      } catch (err) {
+        lastError = err.message;
       }
-    } catch (err) {
-      modeLabel.textContent = "OFFLINE";
-      speak("इंटरनेट कनेक्शन की जांच करें।");
+    }
+
+    modeLabel.textContent = "STANDBY";
+
+    if (replyText) {
+      chatHistory.push({ role: "model", parts: [{ text: replyText }] });
+      speak(replyText);
+    } else {
+      console.error("API Failed:", lastError);
+      speak(`API से संपर्क नहीं हो पाया: ${lastError.slice(0, 60)}`);
     }
   }
 
@@ -720,7 +915,7 @@
     textInput.value = "";
   }
 
-  // Speech Recognition (Hands-Free + Hindi/English)
+  // Speech Recognition (Hands-Free Hindi + English)
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   let recognition = null;
   let isListening = false;
@@ -728,7 +923,7 @@
 
   if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.lang = 'hi-IN'; // Recognizes both Hindi & English clearly
+    recognition.lang = 'hi-IN';
     recognition.interimResults = true;
     recognition.continuous = false;
 
@@ -747,11 +942,9 @@
         if (event.results[i].isFinal) finalTxt += event.results[i][0].transcript;
         else interim += event.results[i][0].transcript;
       }
-
-      if (interim) heardStrip.textContent = "Sun raha hoon: " + interim;
-
+      if (interim) heardStrip.textContent = "सुन रहा हूँ: " + interim;
       if (finalTxt.trim()) {
-        heardStrip.textContent = "Aapne kaha: " + finalTxt;
+        heardStrip.textContent = "आपने कहा: " + finalTxt;
         handleVoiceTranscript(finalTxt.trim());
       }
     };
@@ -761,7 +954,7 @@
       if (e.error === 'not-allowed') {
         keepMicAlive = false;
         resetMicUI();
-        speak("Browser mein Mic permission allow karein.");
+        speak("कृपया ब्राउज़र में माइक की अनुमति दें।");
       }
     };
 
@@ -804,7 +997,7 @@
 
   function toggleMic() {
     if (!recognition) {
-      speak("Kripya Google Chrome ya Microsoft Edge browser use karein.");
+      speak("कृपया Google Chrome या Microsoft Edge ब्राउज़र का उपयोग करें।");
       return;
     }
     if (isListening || keepMicAlive) {
